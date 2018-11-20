@@ -268,6 +268,16 @@ public class StructLoggerTests {
         actualLoggingEvent = slf4jLogger.getLoggingEvents().get(0);
         Assert.assertThat(expectedLoggingEvent, is(actualLoggingEvent));
 
+        slf4jLogger.clear(); // clear previous log events
+        // assert hashmap will work as well
+        Map<String, Object> contextMap = new HashMap<>();
+        contextMap.put("key1", "value1");
+        contextMap.put("key2", "value2");
+        logger.newBind(contextMap);
+        logger.info(message);
+        expectedLoggingEvent = info(TestUtils.formatAsStructLogEntry(message, Helpers.mapToObjectArray(contextMap)));
+        actualLoggingEvent = slf4jLogger.getLoggingEvents().get(0);
+        Assert.assertThat(expectedLoggingEvent, is(actualLoggingEvent));
     }
 
     @Test
