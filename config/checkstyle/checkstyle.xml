@@ -90,7 +90,7 @@ page at http://checkstyle.sourceforge.net/config.html -->
 
         <module name="MethodLength">
             <property name="tokens" value="METHOD_DEF" />
-            <property name="max" value="35" />
+            <property name="max" value="40" />
             <property name="countEmpty" value="false" />
             <property name="severity" value="error" />
         </module>

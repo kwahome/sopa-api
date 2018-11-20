@@ -74,9 +74,11 @@ public class Helpers {
      */
     public static Object[] mapToObjectArray(Map<String, Object> map) {
         ArrayList<Object> objectArrayList = new ArrayList<>();
+        Object[] mapKeyset = map.keySet().toArray();
+        Object[] mapValues = map.values().toArray();
         for (int i = 0; i < map.size(); i++) {
-            objectArrayList.add(map.keySet().toArray()[i]);
-            objectArrayList.add(map.values().toArray()[i]);
+            objectArrayList.add(mapKeyset[i]);
+            objectArrayList.add(mapValues[i]);
         }
         return objectArrayList.toArray();
     }

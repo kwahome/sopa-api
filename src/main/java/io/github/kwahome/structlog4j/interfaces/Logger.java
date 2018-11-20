@@ -45,10 +45,7 @@ public interface Logger {
     boolean isTraceEnabled();
 
     // context bind handling
-    void newBind(LoggableObject loggerContext);
     void newBind(Object...params);
-    void bind(LoggableObject loggerContext);
     void bind(Object...params);
-    void unbind(LoggableObject loggerContext);
     void unbind(Object...params);
 }
