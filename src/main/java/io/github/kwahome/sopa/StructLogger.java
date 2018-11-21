@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package io.github.kwahome.structlog4j;
+package io.github.kwahome.sopa;
 
 import java.util.Map;
 import java.util.Optional;
@@ -30,10 +30,10 @@ import java.util.Optional;
 import org.slf4j.LoggerFactory;
 import org.slf4j.event.Level;
 
-import io.github.kwahome.structlog4j.interfaces.LogRenderer;
-import io.github.kwahome.structlog4j.interfaces.LoggableObject;
-import io.github.kwahome.structlog4j.interfaces.Logger;
-import io.github.kwahome.structlog4j.utils.Helpers;
+import io.github.kwahome.sopa.interfaces.LogRenderer;
+import io.github.kwahome.sopa.interfaces.LoggableObject;
+import io.github.kwahome.sopa.interfaces.Logger;
+import io.github.kwahome.sopa.utils.Helpers;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
@@ -62,11 +62,10 @@ public class StructLogger implements Logger {
     }
 
     /**
-     * Returns a LoggableObject from the optional instanceBoundContext.
+     * Returns a {@link LoggableObject} from the optional {@link #instanceBoundContext}.
+     * If the {@link Optional} is empty, an empty {@link GenericLoggableObject} is returned.
      *
-     * If the optional is empty, an empty GenericLoggableObject is returned.
-     *
-     * @return Optional
+     * @return {@link Optional}
      */
     private LoggableObject getLoggableInstanceBoundContext() {
         LoggableObject loggableObject = new GenericLoggableObject();
@@ -76,33 +75,38 @@ public class StructLogger implements Logger {
         return loggableObject;
     }
 
+    /**
+     * {@link #instanceBoundContext} setter method.
+     *
+     * @param instanceBoundContext {@link LoggableObject}
+     */
     private void setInstanceBoundContext(LoggableObject instanceBoundContext) {
         this.instanceBoundContext = Optional.of(instanceBoundContext);
     }
 
     /**
-     * Returns a LoggableObject from the optional StructLog4JConfig contextSupplier.
+     * Returns a {@link LoggableObject} from the {@link StructLoggerConfig} contextSupplier.
      *
-     * If the optional is empty, an empty GenericLoggableObject is returned.
+     * If the optional is empty, an empty {@link GenericLoggableObject} is returned.
      *
      * @return Optional
      */
     private LoggableObject getLoggableGlobalContextSupplier() {
         LoggableObject loggableObject = new GenericLoggableObject();
-        if (StructLog4JConfig.getContextSupplier().isPresent()) {
-            loggableObject = StructLog4JConfig.getContextSupplier().get();
+        if (StructLoggerConfig.getContextSupplier().isPresent()) {
+            loggableObject = StructLoggerConfig.getContextSupplier().get();
         }
         return loggableObject;
     }
 
     /**
-     * Binds passed context to Logger instance. Existing context will be overwritten.
+     * Binds passed context to {@link Logger} instance. Existing context will be overwritten.
      *
      * Takes a list of key-value pairs at alternate positions e.g:
      *
      *      [key1, value1, key2, value2]
      *
-     * @param params "list of key/value pairs"
+     * @param params "list of key-value pairs"
      */
     @Override
     public void newBind(Object...params) {
@@ -111,14 +115,14 @@ public class StructLogger implements Logger {
     }
 
     /**
-     * Binds passed context to Logger instance while preserving existing context
+     * Binds passed context to {@link Logger} instance while preserving existing context
      * by adding new params onto the already bound context.
      *
      * Takes a list of key-value pairs at alternate positions e.g:
      *
      *      [key1, value1, key2, value2]
      *
-     * @param params "list of key/value pairs"
+     * @param params "list of key-value pairs"
      */
     @Override
     public void bind(Object...params) {
@@ -130,42 +134,50 @@ public class StructLogger implements Logger {
     }
 
     /**
-     * Removes passed context from Logger instance bound context.
+     * Removes passed context from {@link Logger} instance bound context.
      *
      * Takes a list of key-value pairs at alternate positions e.g:
      *
      *      [key1, value1, key2, value2]
      *
-     * @param params "list of key/value pairs"
+     * @param params "list of key-value pairs"
      */
     @Override
     public void unbind(Object...params) {
         instanceBoundContext = Optional.of(new GenericLoggableObject(removeItemFromBoundContext(params)));
     }
 
+    /**
+     * Adds passed log context params to context bound to the logger instance.
+     *
+     * The {@link Object}[] instanceBoundContext and the array of params are converted into a
+     * {@link Map}<{@link String}, {@link Object}> to guarantee that keys are not duplicated.
+     *
+     * @param params "array of objects"
+     * @return {@link Object}[]
+     */
     private Object[] addParamsToBoundContext(Object...params) {
         Map<String, Object> globalLoggerContext = Helpers.objectArrayToMap(
                 getLoggableGlobalContextSupplier().loggableObject());
         Map<String, Object> stringObjectMap = Helpers.objectArrayToMap(
                 getLoggableInstanceBoundContext().loggableObject());
-        boolean processKeyValues = true;
+        boolean proceed = true;
         for (int i = 0; i < params.length; i++) {
             Object param = params[i];
             if (param instanceof LoggableObject) {
                 LoggableObject loggableObject = (LoggableObject) param;
                 stringObjectMap.putAll(Helpers.objectArrayToMap(loggableObject.loggableObject()));
-            } else if (param instanceof Map) {
-                if (i % 2 == 0 || (i % 2 != 0 && !validateKey(params[i - 1], null, false))) {
-                    Map<String, Object> map = (Map<String, Object>) param;
-                    stringObjectMap.putAll(map);
-                }
-            } else if (processKeyValues) {
+            } else if (param instanceof Map &&
+                    (i % 2 == 0 || (i % 2 != 0 && !validateKey(params[i - 1], null, false)))) {
+                Map<String, Object> map = (Map<String, Object>) param;
+                stringObjectMap.putAll(map);
+            } else if (proceed) {
                 // dynamic key-value pairs being passed in
                 // process the key-value pairs only if no errors were encountered and order can is reliably correct
                 // move on to the next field automatically and assume it's the value
                 i++;
                 if (i < params.length) {
-                    if (processKeyValues = validateKey(param, null, true)) {
+                    if (proceed = validateKey(param, null, true)) {
                         String key = (String) param;
                         // check if key in global context in which case the
                         // global context values takes precedence & we don't want duplication
@@ -174,51 +186,55 @@ public class StructLogger implements Logger {
                         } else {
                             slf4jLogger.warn(
                                     String.format("%s key `%s` ignored because it exists in the global context with " +
-                                    "value `%s` which takes precedence.", StructLog4JConfig.getStructLog4jTag(), key,
+                                    "value `%s` which takes precedence.", StructLoggerConfig.getStructLog4jTag(), key,
                                     globalLoggerContext.get(key)));
                         }
                     }
                 } else {
                     slf4jLogger.warn(String.format("%s odd number of parameters (%s) passed in. " +
                             "The value pair for key `%s` not found thus it has been ignored.",
-                            StructLog4JConfig.getStructLog4jTag(), params.length, param));
+                            StructLoggerConfig.getStructLog4jTag(), params.length, param));
                 }
             }
         }
         return Helpers.mapToObjectArray(stringObjectMap);
     }
 
+    /**
+     * Removes passed log context params to context bound to the logger instance
+     *
+     * @param params "array of objects"
+     * @return Object[]
+     */
     private Object[] removeItemFromBoundContext(Object...params) {
         Map<String, Object> stringObjectMap = Helpers.objectArrayToMap(
                 getLoggableInstanceBoundContext().loggableObject());
-        boolean processKeyValues = true;
+        boolean proceed = true;
         for (int i = 0; i < params.length; i++) {
             Object param = params[i];
             if (param instanceof LoggableObject) {
                 LoggableObject loggableObject = (LoggableObject) param;
                 stringObjectMap.entrySet().removeAll(
                         Helpers.objectArrayToMap(loggableObject.loggableObject()).entrySet());
-            } else if (param instanceof Map) {
-                if (i % 2 == 0 || (i % 2 != 0 && !validateKey(params[i - 1], null, false))) {
-                    Map<String, Object> map = (Map<String, Object>) param;
-                    stringObjectMap.entrySet().removeAll(map.entrySet());
-                }
-            } else if (processKeyValues) {
-                // dynamic key-value pairs being passed in
+            } else if (param instanceof Map &&
+                    (i % 2 == 0 || (i % 2 != 0 && !validateKey(params[i - 1], null, false)))) {
+                Map<String, Object> map = (Map<String, Object>) param;
+                stringObjectMap.entrySet().removeAll(map.entrySet());
+            } else if (proceed) {
                 // process the key-value pairs only if no errors were encountered and order can is reliably correct
-                // move on to the next field automatically and assume it's the value
+                // next field is construed to be the value
                 i++;
                 if (i < params.length) {
                     // check if key in global context in which case the
                     // global context values takes precedence
-                    if (processKeyValues = validateKey(param, null, true)) {
+                    if (proceed = validateKey(param, null, true)) {
                         String key = (String) param;
                         stringObjectMap.remove(key, params[i]);
                     }
                 } else {
                     slf4jLogger.warn(String.format("%s odd number of parameters (%s) passed in. " +
                                     "The value pair for key `%s` not found thus it has been ignored.",
-                            StructLog4JConfig.getStructLog4jTag(), params.length, param));
+                            StructLoggerConfig.getStructLog4jTag(), params.length, param));
                 }
             }
         }
@@ -286,65 +302,6 @@ public class StructLogger implements Logger {
     }
 
     /**
-     * Common method to handle structured logging. It delegates logging of different levels to the slf4j logger.
-     *
-     * @param level "logging level"
-     * @param message "log message"
-     * @param params "Object array containing key-value pairs at alternate indices"
-     */
-    private void log(Level level, String message, Object...params) {
-        try {
-            message = message == null ? "" : message; // just in case...
-            Throwable throwable = null;
-            LogRenderer<Object> logRenderer = StructLog4JConfig.getLogRenderer();
-            Object builderObject = logRenderer.start(slf4jLogger);
-            logRenderer.addMessage(slf4jLogger, builderObject, message);
-            boolean processKeyValues = true; // set to false in case of errors thus cannot rely on the order any more
-            for (int i = 0; i < params.length; i++) {
-                Object param = params[i];
-                if (param instanceof LoggableObject) {
-                    handleLoggableObject(logRenderer, builderObject, (LoggableObject) param);
-                } else if (param instanceof Throwable) {
-                    // exceptions are not logged directly (unless they implement LoggableObject)
-                    // they will get passed separate as exceptions to the base slf4j API
-                    throwable = (Throwable) param;
-                    // also log the error explicitly as a separate key-value pair for easy parsing
-                    logRenderer.addKeyValue(
-                            slf4jLogger, builderObject, "errorMessage", getCauseErrorMessage(throwable));
-                } else if (param instanceof Map) {
-                    if (i % 2 == 0 || (i % 2 != 0 && !validateKey(params[i - 1], null, false))) {
-                        Map<String, Object> map = (Map<String, Object>) param;
-                        handleMap(logRenderer, builderObject, map);
-                    }
-                } else if (processKeyValues) {
-                    // dynamic key-value pairs being passed in
-                    // process the key-value pairs only if no errors were encountered and order can is reliably correct
-                    // move on to the next field automatically and assume it's the value
-                    i++;
-                    if (i < params.length) {
-                        // error encountered in a key, stop processing other key-value pairs
-                        processKeyValues = handleKeyValue(logRenderer, builderObject, param, params[i], null);
-                    } else {
-                        slf4jLogger.warn(String.format("%s odd number of parameters (%s) passed in. " +
-                                        "The value pair for key `%s` not found thus it has been ignored.",
-                                StructLog4JConfig.getStructLog4jTag(), params.length, param));
-                    }
-                }
-            }
-            // add logger instance bound context
-            handleLoggableObject(logRenderer, builderObject, getLoggableInstanceBoundContext());
-            // add mandatory context, if specified
-            handleLoggableObject(logRenderer, builderObject, getLoggableGlobalContextSupplier());
-            // actual logging via slf4j
-            log(level, logRenderer.end(slf4jLogger, builderObject), throwable);
-        } catch (Exception ex) {
-            // should never happen, a logging library has no right to generate exceptions :-)
-            slf4jLogger.error(String.format(
-                    "%s unexpected logger error `%s`.", StructLog4JConfig.getStructLog4jTag(), ex.getMessage()), ex);
-        }
-    }
-
-    /**
      * Handle LoggableObject implementations
      *
      * @param logRenderer "LogRenderer implementation"
@@ -366,7 +323,7 @@ public class StructLogger implements Logger {
             size = size - 1;
             slf4jLogger.warn(String.format("%s odd number of parameters (%s) returned from %s.loggableObject(). " +
                     "The value pair for key `%s` not found thus it has been ignored.",
-                    StructLog4JConfig.getStructLog4jTag(), params.getClass().getName(), params.length, params[size]));
+                    StructLoggerConfig.getStructLog4jTag(), params.getClass().getName(), params.length, params[size]));
 
         }
         for (int i = 0; i < size; i = i + 2) {
@@ -415,21 +372,21 @@ public class StructLogger implements Logger {
             } else if (warningLog) {
                 if (loggableSourceObject == null) {
                     slf4jLogger.warn(String.format("%s key `%s` with spaces passed in.",
-                            StructLog4JConfig.getStructLog4jTag(), key));
+                            StructLoggerConfig.getStructLog4jTag(), key));
                 } else {
                     slf4jLogger.warn(String.format("%s key `%s` with spaces passed in from %s.loggableObject()",
-                            StructLog4JConfig.getStructLog4jTag(), key, loggableSourceObject.getClass().getName()));
+                            StructLoggerConfig.getStructLog4jTag(), key, loggableSourceObject.getClass().getName()));
                 }
             }
         } else if (warningLog) {
             if (loggableSourceObject == null) {
                 slf4jLogger.warn(String.format("%s key `%s` expected to be of type String but `%s` passed in.",
-                        StructLog4JConfig.getStructLog4jTag(), keyObject,
+                        StructLoggerConfig.getStructLog4jTag(), keyObject,
                         keyObject != null ? keyObject.getClass().getName() : "null"));
             } else {
                 slf4jLogger.warn(String.format(
                         "%s key `%s` expected to be of type String but `%s` passed in from %s.loggableObject()",
-                        StructLog4JConfig.getStructLog4jTag(), keyObject,
+                        StructLoggerConfig.getStructLog4jTag(), keyObject,
                         keyObject != null ? keyObject.getClass().getName() : "null",
                         loggableSourceObject.getClass().getName()));
             }
@@ -438,6 +395,74 @@ public class StructLogger implements Logger {
         return valid;
     }
 
+    /**
+     * Common method to handle structured logging.
+     * It delegates logging of different levels to the {@link #slf4jLogger} logger.
+     *
+     * @param level "{@link Level}"
+     * @param message "{@link String} message"
+     * @param params "{@link Object}[] containing key-value pairs at alternate indices"
+     */
+    private void log(Level level, String message, Object...params) {
+        try {
+            message = message == null ? "" : message; // just in case...
+            Throwable throwable = null;
+            LogRenderer<Object> logRenderer = StructLoggerConfig.getLogRenderer();
+            Object builderObject = logRenderer.start(slf4jLogger);
+            logRenderer.addMessage(slf4jLogger, builderObject, message);
+            boolean processKeyValues = true; // set to false in case of errors thus cannot rely on the order any more
+            for (int i = 0; i < params.length; i++) {
+                Object param = params[i];
+                if (param instanceof LoggableObject) {
+                    handleLoggableObject(logRenderer, builderObject, (LoggableObject) param);
+                } else if (param instanceof Throwable) {
+                    // exceptions are not logged directly (unless they implement LoggableObject)
+                    // they will get passed separate as exceptions to the base slf4j API
+                    throwable = (Throwable) param;
+                    // also log the error explicitly as a separate key-value pair for easy parsing
+                    logRenderer.addKeyValue(
+                            slf4jLogger, builderObject, "errorMessage", getCauseErrorMessage(throwable));
+                } else if (param instanceof Map &&
+                        (i % 2 == 0 || (i % 2 != 0 && !validateKey(params[i - 1], null, false)))) {
+
+                    Map<String, Object> map = (Map<String, Object>) param;
+                    handleMap(logRenderer, builderObject, map);
+                } else if (processKeyValues) {
+                    // dynamic key-value pairs being passed in
+                    // process the key-value pairs only if no errors were encountered and order can is reliably correct
+                    // move on to the next field automatically and assume it's the value
+                    i++;
+                    if (i < params.length) {
+                        // error encountered in a key, stop processing other key-value pairs
+                        processKeyValues = handleKeyValue(logRenderer, builderObject, param, params[i], null);
+                    } else {
+                        slf4jLogger.warn(String.format("%s odd number of parameters (%s) passed in. " +
+                                        "The value pair for key `%s` not found thus it has been ignored.",
+                                StructLoggerConfig.getStructLog4jTag(), params.length, param));
+                    }
+                }
+            }
+            // add logger instance bound context
+            handleLoggableObject(logRenderer, builderObject, getLoggableInstanceBoundContext());
+            // add mandatory context, if specified
+            handleLoggableObject(logRenderer, builderObject, getLoggableGlobalContextSupplier());
+            // actual logging via slf4j
+            log(level, logRenderer.end(slf4jLogger, builderObject), throwable);
+        } catch (Exception ex) {
+            slf4jLogger.error(String.format(
+                    "%s unexpected logger error `%s`.", StructLoggerConfig.getStructLog4jTag(), ex.getMessage()), ex);
+        }
+    }
+
+    /**
+     * {@link #log(Level, String, Throwable)} overload that calls {@link #slf4jLogger} method
+     * handling the {@link Level} passed with a formatted structured message string and a
+     * {@link Throwable} if any
+     *
+     * @param level "{@link Level} level"
+     * @param structuredMessage "String message"
+     * @param err "{@link Throwable} error"
+     */
     private void log(Level level, String structuredMessage, Throwable err) {
         switch (level) {
             case ERROR:
@@ -501,10 +526,10 @@ public class StructLogger implements Logger {
     }
 
     /**
-     * Goes down the exception hierarchy to find the actual error message at the
-     * root of the entire stack trace.
+     * Recursively goes down the {@link Throwable} hierarchy to find the actual error message at the
+     * root of the stack trace.
      *
-     * @param throwable "Throwable"
+     * @param throwable "{@link Throwable}"
      * @return String
      */
     private String getCauseErrorMessage(Throwable throwable) {

@@ -22,13 +22,12 @@
  * SOFTWARE.
  */
 
-package io.github.kwahome.structlog4j.interfaces;
+package io.github.kwahome.sopa.interfaces;
 
 import org.slf4j.Logger;
 
 /**
- * Standard renderer (format/encoder) interface.
- *
+ * Standard renderer interface.
  * The slf4j logger is passed into every method for any internal error reporting
  * within the log renderer itself.
  *

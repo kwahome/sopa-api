@@ -22,30 +22,12 @@
  * SOFTWARE.
  */
 
-package io.github.kwahome.structlog4j.interfaces;
+package io.github.kwahome.sopa.renderers;
 
 /**
- * Core standard structured logger interface
+ * Basic YAML renderer.
  *
  * @author kelvin.wahome
  */
-public interface Logger {
-    // slf4j APIs
-    void error(String message, Object...params);
-    void warn(String message, Object...params);
-    void info(String message, Object...params);
-    void debug(String message, Object...params);
-    void trace(String message, Object...params);
-
-    // logging level checks
-    boolean isErrorEnabled();
-    boolean isWarnEnabled();
-    boolean isInfoEnabled();
-    boolean isDebugEnabled();
-    boolean isTraceEnabled();
-
-    // context bind handling
-    void newBind(Object...params);
-    void bind(Object...params);
-    void unbind(Object...params);
+public class YAMLRenderer {
 }

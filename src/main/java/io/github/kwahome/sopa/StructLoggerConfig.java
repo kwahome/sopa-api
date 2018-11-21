@@ -22,24 +22,24 @@
  * SOFTWARE.
  */
 
-package io.github.kwahome.structlog4j;
+package io.github.kwahome.sopa;
 
 import java.util.Optional;
 import java.util.function.Function;
 
-import io.github.kwahome.structlog4j.interfaces.LogRenderer;
-import io.github.kwahome.structlog4j.interfaces.LoggableObject;
-import io.github.kwahome.structlog4j.renderers.KeyValueRenderer;
+import io.github.kwahome.sopa.interfaces.LogRenderer;
+import io.github.kwahome.sopa.interfaces.LoggableObject;
+import io.github.kwahome.sopa.renderers.KeyValueRenderer;
 
 /**
- * structlog4j configuration class.
+ * sopa configuration class.
  *
  * This class exposes statics that can be accessed without need of an instance.
  *
  * @author kelvin.wahome
  */
-public class StructLog4JConfig {
-    private static final String STRUCTLOG4J_TAG = "[structlog4j logger] :";
+public class StructLoggerConfig {
+    private static final String STRUCTLOG4J_TAG = "[sopa logger] :";
 
     private static LogRenderer logRenderer = KeyValueRenderer.getInstance();
 
@@ -64,7 +64,7 @@ public class StructLog4JConfig {
      * @param logRenderer "Custom logRenderer implementing the LogRenderer interface"
      */
     public static void setLogRenderer(LogRenderer logRenderer) {
-        StructLog4JConfig.logRenderer = logRenderer;
+        StructLoggerConfig.logRenderer = logRenderer;
     }
 
     /**
@@ -89,7 +89,7 @@ public class StructLog4JConfig {
      * @param contextObject "Lambda that will executed on every log entry."
      */
     public static void setContextSupplier(LoggableObject contextObject) {
-        StructLog4JConfig.contextSupplier = Optional.of(contextObject);
+        StructLoggerConfig.contextSupplier = Optional.of(contextObject);
     }
 
     /**
@@ -136,7 +136,7 @@ public class StructLog4JConfig {
      * @param logEntriesSeparator "String appearing between key=value pairs"
      */
     public static void setLogEntriesSeparator(String logEntriesSeparator) {
-        StructLog4JConfig.logEntriesSeparator = logEntriesSeparator;
+        StructLoggerConfig.logEntriesSeparator = logEntriesSeparator;
     }
 
     /**
