@@ -1,14 +1,26 @@
-plugins {
-    id 'java'
-}
+apply plugin: 'java'
+apply plugin: 'maven-publish'
+apply plugin: 'signing'
+apply plugin: 'application'
+apply plugin: 'jacoco'
+
+apply plugin: 'checkstyle'
 
 group 'io.github.kwahome.sopa'
-version '0.2.0'
-
+version '0.3.0'
+archivesBaseName = "sopa-api"
+description = """Configurable and extensible structured logging on top of `slf4j` API to generate easily parsable log messages in desired formats."""
 sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
-apply plugin: 'java'
-apply plugin: 'checkstyle'
+jar {
+    manifest {
+        attributes('Implementation-Title': project.name,
+                'Class-Path': configurations.compile.collect { it.getName() }.join(' '),
+                'Main-Class': 'com.milau.cli.App',
+                'Implementation-Version': project.version)
+    }
+}
 
 // Dependency versions
 // ---------------------------------------
@@ -18,6 +30,7 @@ def $javaxJsonVersion = "1.1.3"
 def $lombokVersion = "1.18.4"
 def $lidaliaVersion = "1.2.0"
 def $hamcrestVersion = "1.3"
+def $guavaVersion = "23.0"
 // --------------------------------------
 
 repositories {
@@ -27,6 +40,7 @@ repositories {
 dependencies {
     compile group: 'org.slf4j', name: 'slf4j-api', version: $slf4jVersion
     compile group: 'org.glassfish', name: 'javax.json', version: $javaxJsonVersion
+    compile 'com.google.guava:guava:' + $guavaVersion
     compileOnly "org.projectlombok:lombok:" + $lombokVersion
 
     testCompile group: 'junit', name: 'junit', version: $junitVersion
@@ -48,8 +62,94 @@ checkstyleTest {
     source = []
 }
 
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        html.enabled false
+    }
+}
+
+check.dependsOn jacocoTestReport
+
+test {
+    finalizedBy jacocoTestReport
+    testLogging.showStandardStreams = true
+}
+
+task sourceJar(type: Jar) {
+    from sourceSets.main.allJava
+    classifier = 'sources'
+}
+
+task javadocJar(type: Jar) {
+    from javadoc
+    classifier = 'javadoc'
+}
+
+artifacts {
+    archives jar
+    archives sourceJar
+    archives javadocJar
+}
+
+
+publishing{
+    publications{
+        mavenJava(MavenPublication){
+            artifactId = 'sopa-api'
+            from components.java
+            artifact sourceJar
+            artifact javadocJar
+            pom{
+                name = 'sopa-api'
+                description ='Configurable and extensible structured logging on top of `slf4j` API to generate easily parsable log messages in desired formats.'
+                url ='https://github.com/kwahome/sopa-api'
+
+                licenses {
+                    license {
+                        name = 'MIT License'
+                        url = 'https://github.com/kwahome/sopa-api/blob/master/LICENSE'
+                        distribution = 'repo'
+                    }
+                }
+                scm {
+                    url = 'https://github.com/kwahome/sopa-api'
+                    connection = 'scm:git:git://github.com/kwahome/sopa-api.git'
+                    developerConnection = 'scm:git:ssh://git@github.com:kwahome/sopa-api.git'
+                }
+                developers {
+                    developer {
+                        id = 'kwahome'
+                        name = 'Kelvin Wahome'
+                        email = 'kevowahome@gmail.com'
+                    }
+                }
+            }
+        }
+    }
+//    repositories {
+//        maven {
+//            url = "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+//            credentials {
+//                username = ossrhUsername
+//                password = ossrhPassword
+//            }
+//        }
+//    }
+}
+
 test {
     testLogging {
         events "passed", "skipped", "failed"
+    }
+}
+
+signing {
+    sign publishing.publications.mavenJava
+}
+
+javadoc {
+    if(JavaVersion.current().isJava9Compatible()) {
+        options.addBooleanOption('html4', true)
     }
 }
