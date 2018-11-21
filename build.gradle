@@ -13,15 +13,6 @@ description = """Configurable and extensible structured logging on top of `slf4j
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-jar {
-    manifest {
-        attributes('Implementation-Title': project.name,
-                'Class-Path': configurations.compile.collect { it.getName() }.join(' '),
-                'Main-Class': 'com.milau.cli.App',
-                'Implementation-Version': project.version)
-    }
-}
-
 // Dependency versions
 // ---------------------------------------
 def $junitVersion = "4.12"
@@ -38,15 +29,23 @@ repositories {
 }
 
 dependencies {
-    compile group: 'org.slf4j', name: 'slf4j-api', version: $slf4jVersion
     compile group: 'org.glassfish', name: 'javax.json', version: $javaxJsonVersion
     compile 'com.google.guava:guava:' + $guavaVersion
     compileOnly "org.projectlombok:lombok:" + $lombokVersion
+    compile group: 'org.slf4j', name: 'slf4j-api', version: $slf4jVersion
 
     testCompile group: 'junit', name: 'junit', version: $junitVersion
     testCompile group: 'uk.org.lidalia', name: 'slf4j-test', version: $lidaliaVersion
     testCompile group: 'org.hamcrest', name: 'hamcrest-core', version: $hamcrestVersion
     testCompileOnly "org.projectlombok:lombok:" + $lombokVersion
+}
+
+jar {
+    manifest {
+        attributes('Implementation-Title': project.name,
+                'Class-Path': configurations.compile.collect { it.getName() }.join(' '),
+                'Implementation-Version': project.version)
+    }
 }
 
 checkstyle {
