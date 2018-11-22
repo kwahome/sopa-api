@@ -5,6 +5,18 @@ apply plugin: 'jacoco'
 apply plugin: 'findbugs'
 
 apply plugin: 'checkstyle'
+checkstyle {
+    toolVersion '7.8.1'
+    configFile file("$rootProject.projectDir/config/checkstyle/checkstyle.xml")
+}
+
+checkstyleMain {
+    source ='src/main/java'
+}
+
+checkstyleTest {
+    source = []
+}
 
 group 'io.github.kwahome.sopa'
 version '0.3.0'
@@ -42,24 +54,12 @@ dependencies {
 
 jar {
     manifest {
-        attributes('Implementation-Title': project.name,
+        attributes(
+                'Implementation-Title': project.name,
                 'Class-Path': configurations.compile.collect { it.getName() }.join(' '),
-                'Implementation-Version': project.version)
+                'Implementation-Version': project.version
+        )
     }
-}
-
-
-checkstyle {
-    toolVersion '7.8.1'
-    configFile file("config/checkstyle/checkstyle.xml")
-}
-
-checkstyleMain {
-    source ='src/main/java'
-}
-
-checkstyleTest {
-    source = []
 }
 
 jacocoTestReport {
@@ -68,7 +68,6 @@ jacocoTestReport {
         html.enabled false
     }
 }
-
 
 // code quality
 findbugs {
@@ -86,13 +85,16 @@ tasks.withType(FindBugs) {
 }
 
 check.dependsOn test
-build.dependsOn check
+// build.dependsOn check
 // ensure code quality for published artifacts
 // install.dependsOn check
 
 test {
     finalizedBy jacocoTestReport
     testLogging.showStandardStreams = true
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
 }
 
 task sourceJar(type: Jar) {
@@ -110,7 +112,6 @@ artifacts {
     archives sourceJar
     archives javadocJar
 }
-
 
 publishing{
     publications{
@@ -155,12 +156,6 @@ publishing{
 //            }
 //        }
 //    }
-}
-
-test {
-    testLogging {
-        events "passed", "skipped", "failed"
-    }
 }
 
 signing {
