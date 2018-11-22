@@ -1,8 +1,8 @@
 apply plugin: 'java'
 apply plugin: 'maven-publish'
 apply plugin: 'signing'
-apply plugin: 'application'
 apply plugin: 'jacoco'
+apply plugin: 'findbugs'
 
 apply plugin: 'checkstyle'
 
@@ -48,6 +48,7 @@ jar {
     }
 }
 
+
 checkstyle {
     toolVersion '7.8.1'
     configFile file("config/checkstyle/checkstyle.xml")
@@ -68,7 +69,26 @@ jacocoTestReport {
     }
 }
 
-check.dependsOn jacocoTestReport
+
+// code quality
+findbugs {
+    effort = "max"
+    reportLevel = "medium"
+    includeFilter = file("$rootProject.projectDir/findBugsIncludeFilter.xml")
+    excludeFilter = file("$rootProject.projectDir/findBugsExcludeFilter.xml")
+}
+
+tasks.withType(FindBugs) {
+    reports {
+        xml.enabled false
+        html.enabled true
+    }
+}
+
+check.dependsOn test
+build.dependsOn check
+// ensure code quality for published artifacts
+// install.dependsOn check
 
 test {
     finalizedBy jacocoTestReport
@@ -76,12 +96,12 @@ test {
 }
 
 task sourceJar(type: Jar) {
-    from sourceSets.main.allJava
+    from sourceSets.main.allSource
     classifier = 'sources'
 }
 
 task javadocJar(type: Jar) {
-    from javadoc
+    from javadoc.destinationDir
     classifier = 'javadoc'
 }
 
