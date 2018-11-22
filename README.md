@@ -1,4 +1,5 @@
 # sopa-api
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/21b905dc40e542bfbd8477dcc9b0a7ca)](https://app.codacy.com/app/kwahome/sopa-api?utm_source=github.com&utm_medium=referral&utm_content=kwahome/sopa-api&utm_campaign=Badge_Grade_Dashboard)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/32bcb84ca18842358fdd6f86956ddbdd)](https://app.codacy.com/app/kwahome/structlog4j-api?utm_source=github.com&utm_medium=referral&utm_content=kwahome/structlog4j-api&utm_campaign=Badge_Grade_Dashboard)
 [![Build Status](https://travis-ci.com/kwahome/structlog4j-api.svg?branch=master)](https://travis-ci.com/kwahome/structlog4j-api)
 [![codecov](https://codecov.io/gh/kwahome/structlog4j-api/branch/master/graph/badge.svg)](https://codecov.io/gh/kwahome/structlog4j-api)
