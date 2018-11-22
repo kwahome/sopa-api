@@ -403,9 +403,8 @@ public class StructLogger implements Logger {
      * @param message "{@link String} message"
      * @param params "{@link Object}[] containing key-value pairs at alternate indices"
      */
-    private void log(Level level, String message, Object...params) {
+    private void log(Level level, @NonNull String message, Object...params) {
         try {
-            message = message == null ? "" : message; // just in case...
             Throwable throwable = null;
             LogRenderer<Object> logRenderer = StructLoggerConfig.getLogRenderer();
             Object builderObject = logRenderer.start(slf4jLogger);

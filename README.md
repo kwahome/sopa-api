@@ -8,7 +8,7 @@
 
 I made this for custom use on a project and I now find myself (and my friends) copy it into all the little apps we make. I'm tired of doing it. Now it's a library.
 
-### Artifacts
+## Artifacts
 Maven central :-)
 
 ```xml

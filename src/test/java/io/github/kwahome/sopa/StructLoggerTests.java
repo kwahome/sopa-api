@@ -715,8 +715,8 @@ public class StructLoggerTests {
 
         params = loggableObject.loggableObject();
         warningMessage = String.format("%s key `%s` expected to be of type String but `%s` passed in from " +
-                "%s.loggableObject()", StructLoggerConfig.getStructLog4jTag(), params[0], params[0].getClass().getName(),
-                loggableObject.getClass().getName());
+                "%s.loggableObject()", StructLoggerConfig.getStructLog4jTag(), params[0],
+                params[0].getClass().getName(), loggableObject.getClass().getName());
 
         expectedLoggingEvent = info(message);
         actualLoggingEvent = slf4jLogger.getLoggingEvents().get(1);
