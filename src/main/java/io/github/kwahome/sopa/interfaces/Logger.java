@@ -22,33 +22,30 @@
  * SOFTWARE.
  */
 
-package io.github.kwahome.structlog4j;
-
-import io.github.kwahome.structlog4j.interfaces.Logger;
+package io.github.kwahome.sopa.interfaces;
 
 /**
- * structlog4j logger factory returning a StructLogger instance
+ * Core standard structured logger interface
  *
  * @author kelvin.wahome
  */
-public class LoggerFactory {
-    /**
-     * Returns a StructLogger instance for explicit name
-     *
-     * @param name "Logger name"
-     * @return StructLogger
-     */
-    public static Logger getLogger(String name) {
-        return new StructLogger(name);
-    }
+public interface Logger {
+    // slf4j APIs
+    void error(String message, Object...params);
+    void warn(String message, Object...params);
+    void info(String message, Object...params);
+    void debug(String message, Object...params);
+    void trace(String message, Object...params);
 
-    /**
-     * Returns a StructLogger instance for source class that is generating entries
-     *
-     * @param source "Logger class source"
-     * @return StructLogger
-     */
-    public static Logger getLogger(Class<?> source) {
-        return new StructLogger(source);
-    }
+    // logging level checks
+    boolean isErrorEnabled();
+    boolean isWarnEnabled();
+    boolean isInfoEnabled();
+    boolean isDebugEnabled();
+    boolean isTraceEnabled();
+
+    // context bind handling
+    void newBind(Object...params);
+    void bind(Object...params);
+    void unbind(Object...params);
 }

@@ -22,12 +22,12 @@
  * SOFTWARE.
  */
 
-package io.github.kwahome.structlog4j;
+package io.github.kwahome.sopa;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import io.github.kwahome.structlog4j.utils.Helpers;
+import io.github.kwahome.sopa.utils.Helpers;
 
 import org.junit.After;
 import org.junit.Assert;

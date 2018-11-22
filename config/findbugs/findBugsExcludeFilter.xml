@@ -1,0 +1,10 @@
+<FindBugsFilter>
+    <!-- Skip JUnit test code -->
+    <Match>
+        <Package name="~test\..*"/>
+    </Match>
+    <Match>
+        <Class name="~.*Test$"/>
+    </Match>
+    <!-- False positives -->
+</FindBugsFilter>

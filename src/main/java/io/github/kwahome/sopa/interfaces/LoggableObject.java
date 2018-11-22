@@ -22,11 +22,11 @@
  * SOFTWARE.
  */
 
-package io.github.kwahome.structlog4j.interfaces;
+package io.github.kwahome.sopa.interfaces;
 
 /**
- * Interface that can be added to any POJO in order to enable structured logging
- * in it automatically whenever it is passed to the logger.
+ * {@link FunctionalInterface} that can be added to any POJO to enable structured
+ * logging whenever it is passed to the logger.
  *
  * @author kelvin.wahome
  */
@@ -39,7 +39,7 @@ public interface LoggableObject {
      *
      * from:
      *
-     *      return Object[]{"key1", this.getProperty1(), "key2", this.getProperty2()"};
+     *      return {@link Object}[]{"key1", this.getProperty1(), "key2", this.getProperty2()"};
      *
      * @return Array of key-value pairs to log
      */

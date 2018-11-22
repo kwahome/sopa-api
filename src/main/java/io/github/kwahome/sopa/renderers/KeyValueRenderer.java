@@ -22,11 +22,11 @@
  * SOFTWARE.
  */
 
-package io.github.kwahome.structlog4j.renderers;
+package io.github.kwahome.sopa.renderers;
 
 import org.slf4j.Logger;
 
-import io.github.kwahome.structlog4j.interfaces.LogRenderer;
+import io.github.kwahome.sopa.interfaces.LogRenderer;
 
 /**
  * Standard key-value pair renderer that formats log messages as:

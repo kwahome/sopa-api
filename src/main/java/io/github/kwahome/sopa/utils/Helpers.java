@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package io.github.kwahome.structlog4j.utils;
+package io.github.kwahome.sopa.utils;
 
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -22,12 +22,36 @@
  * SOFTWARE.
  */
 
-package io.github.kwahome.structlog4j.renderers;
+package io.github.kwahome.sopa;
+
+import io.github.kwahome.sopa.interfaces.LoggableObject;
 
 /**
- * Basic YAML renderer.
+ * Generic loggable object implementation.
+ *
+ * For use in dynamically adding logger contexts
  *
  * @author kelvin.wahome
  */
-public class YAMLRenderer {
+public class GenericLoggableObject implements LoggableObject {
+    private Object[] loggableObjectArray = new Object[]{};
+
+    GenericLoggableObject(){}
+
+    public GenericLoggableObject(Object[] loggableObjectArray) {
+        this.loggableObjectArray = loggableObjectArray;
+    }
+
+    public Object[] getLoggableObjectArray() {
+        return loggableObjectArray;
+    }
+
+    public void setLoggableObjectArray(Object[] loggableObjectArray) {
+        this.loggableObjectArray = loggableObjectArray;
+    }
+
+    @Override
+    public Object[] loggableObject() {
+        return getLoggableObjectArray();
+    }
 }

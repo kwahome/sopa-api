@@ -22,14 +22,14 @@
  * SOFTWARE.
  */
 
-package io.github.kwahome.structlog4j;
+package io.github.kwahome.sopa;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import io.github.kwahome.structlog4j.interfaces.LoggableObject;
-import io.github.kwahome.structlog4j.renderers.KeyValueRenderer;
-import io.github.kwahome.structlog4j.utils.Helpers;
+import io.github.kwahome.sopa.interfaces.LoggableObject;
+import io.github.kwahome.sopa.renderers.KeyValueRenderer;
+import io.github.kwahome.sopa.utils.Helpers;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -43,7 +43,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static uk.org.lidalia.slf4jtest.LoggingEvent.*;
 
 /**
- * Testing structlog4j's API.
+ * Testing sopa's API.
  *
  * @author kelvin.wahome
  */
@@ -53,9 +53,9 @@ public class StructLoggerTests {
 
     @Before
     public void setUp() {
-        StructLog4JConfig.clearContextSupplier();
-        StructLog4JConfig.setLogRenderer(KeyValueRenderer.getInstance());
-        StructLog4JConfig.setLogEntriesSeparator(",");
+        StructLoggerConfig.clearContextSupplier();
+        StructLoggerConfig.setLogRenderer(KeyValueRenderer.getInstance());
+        StructLoggerConfig.setLogEntriesSeparator(",");
 
         logger = (StructLogger) LoggerFactory.getLogger(StructLoggerTests.class);
         slf4jLogger = (TestLogger) logger.getSlf4jLogger();
@@ -395,7 +395,18 @@ public class StructLoggerTests {
                 params[6], params[7], params[8], params[9], "myMap", String.format( "\"%s\"", map2), "test", 1.234));
         LoggingEvent actualLoggingEvent = slf4jLogger.getLoggingEvents().get(0);
         Assert.assertThat(actualLoggingEvent, is(expectedLoggingEvent));
+    }
 
+    @Test
+    public void loggableObjectPassedInAsValue() {
+        String message = "Hello World!";
+        LoggableObject loggableObject = new GenericLoggableObject(new Object[]{"key1", "value1"});
+        logger.info(message, "loggableObject", loggableObject, "loggableObject", loggableObject);
+
+        LoggingEvent expectedLoggingEvent = info(String.format("%s, %s=%s, %s=%s", message,
+                "loggableObject", loggableObject, "loggableObject", loggableObject));
+        LoggingEvent actualLoggingEvent = slf4jLogger.getLoggingEvents().get(0);
+        Assert.assertThat(actualLoggingEvent, is(expectedLoggingEvent));
     }
 
     @Test
@@ -575,7 +586,7 @@ public class StructLoggerTests {
     @Test
     public void contextSupplierAddedTest() {
         LoggableObject globalContext = new GenericLoggableObject(new Object[]{"environment", "development"});
-        StructLog4JConfig.setContextSupplier(globalContext);
+        StructLoggerConfig.setContextSupplier(globalContext);
         String message = "Hello World!";
         logger.info(message);
         Object[] context = globalContext.loggableObject();
@@ -590,7 +601,7 @@ public class StructLoggerTests {
         logger.bind(params);
         logger.info(message);
         String warningMessage = String.format("%s key `%s` ignored because it exists in the global context with " +
-                "value `%s` which takes precedence.", StructLog4JConfig.getStructLog4jTag(), params[0],
+                "value `%s` which takes precedence.", StructLoggerConfig.getStructLog4jTag(), params[0],
                 globalContext.loggableObject()[1]);
         expectedLoggingEvent = info(String.format("%s, %s=%s", message, context[0], context[1]));
         actualLoggingEvent = slf4jLogger.getLoggingEvents().get(1);
@@ -661,7 +672,10 @@ public class StructLoggerTests {
         Assert.assertThat(actualLoggingEvent, is(expectedLoggingEvent));
     }
 
-    /*failure case tests*/
+    /*
+    * failure case test scenarios
+    *
+    */
     @Test
     public void oddNumberParamsTest() {
         String message = "Hello World!";
@@ -670,7 +684,7 @@ public class StructLoggerTests {
 
         String warningMessage = String.format("%s odd number of parameters (%s) passed in. " +
                         "The value pair for key `%s` not found thus it has been ignored.",
-                        StructLog4JConfig.getStructLog4jTag(), params.length, params[params.length - 1]);
+                        StructLoggerConfig.getStructLog4jTag(), params.length, params[params.length - 1]);
 
         LoggingEvent expectedLoggingEvent = info(String.format("%s, %s=%s", message, params[0], params[1]));
         LoggingEvent actualLoggingEvent = slf4jLogger.getLoggingEvents().get(1);
@@ -686,7 +700,7 @@ public class StructLoggerTests {
         logger.info(message, params);
 
         String warningMessage = String.format("%s key `%s` expected to be of type String but `%s` passed in.",
-                StructLog4JConfig.getStructLog4jTag(), params[0], params[0].getClass().getName());
+                StructLoggerConfig.getStructLog4jTag(), params[0], params[0].getClass().getName());
 
         LoggingEvent expectedLoggingEvent = info(message);
         LoggingEvent actualLoggingEvent = slf4jLogger.getLoggingEvents().get(1);
@@ -701,8 +715,8 @@ public class StructLoggerTests {
 
         params = loggableObject.loggableObject();
         warningMessage = String.format("%s key `%s` expected to be of type String but `%s` passed in from " +
-                "%s.loggableObject()", StructLog4JConfig.getStructLog4jTag(), params[0], params[0].getClass().getName(),
-                loggableObject.getClass().getName());
+                "%s.loggableObject()", StructLoggerConfig.getStructLog4jTag(), params[0],
+                params[0].getClass().getName(), loggableObject.getClass().getName());
 
         expectedLoggingEvent = info(message);
         actualLoggingEvent = slf4jLogger.getLoggingEvents().get(1);
@@ -718,7 +732,7 @@ public class StructLoggerTests {
         logger.info(message, params);
 
         String warningMessage = String.format("%s key `%s` with spaces passed in.",
-                StructLog4JConfig.getStructLog4jTag(), params[0]);
+                StructLoggerConfig.getStructLog4jTag(), params[0]);
 
         LoggingEvent expectedLoggingEvent = info(message);
         LoggingEvent actualLoggingEvent = slf4jLogger.getLoggingEvents().get(1);
@@ -732,7 +746,7 @@ public class StructLoggerTests {
         logger.info(message, loggableObject);
 
         warningMessage = String.format("%s key `%s` with spaces passed in from %s.loggableObject()",
-                StructLog4JConfig.getStructLog4jTag(), params[0], loggableObject.getClass().getName());
+                StructLoggerConfig.getStructLog4jTag(), params[0], loggableObject.getClass().getName());
 
         expectedLoggingEvent = info(message);
         actualLoggingEvent = slf4jLogger.getLoggingEvents().get(1);

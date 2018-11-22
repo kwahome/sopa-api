@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package io.github.kwahome.structlog4j.renderers;
+package io.github.kwahome.sopa.renderers;
 
 import java.io.StringWriter;
 
@@ -30,7 +30,7 @@ import javax.json.Json;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonWriter;
 
-import io.github.kwahome.structlog4j.interfaces.LogRenderer;
+import io.github.kwahome.sopa.interfaces.LogRenderer;
 
 /**
  * Basic JSON renderer.

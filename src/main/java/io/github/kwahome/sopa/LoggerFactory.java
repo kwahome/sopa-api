@@ -22,36 +22,33 @@
  * SOFTWARE.
  */
 
-package io.github.kwahome.structlog4j;
+package io.github.kwahome.sopa;
 
-import io.github.kwahome.structlog4j.interfaces.LoggableObject;
+import io.github.kwahome.sopa.interfaces.Logger;
 
 /**
- * Generic loggable object implementation.
- *
- * For use in dynamically adding logger contexts
+ * sopa logger factory returning a StructLogger instance
  *
  * @author kelvin.wahome
  */
-public class GenericLoggableObject implements LoggableObject {
-    private Object[] loggableObjectArray = new Object[]{};
-
-    GenericLoggableObject(){}
-
-    public GenericLoggableObject(Object[] loggableObjectArray) {
-        this.loggableObjectArray = loggableObjectArray;
+public class LoggerFactory {
+    /**
+     * Returns a StructLogger instance for explicit name
+     *
+     * @param name "Logger name"
+     * @return StructLogger
+     */
+    public static Logger getLogger(String name) {
+        return new StructLogger(name);
     }
 
-    public Object[] getLoggableObjectArray() {
-        return loggableObjectArray;
-    }
-
-    public void setLoggableObjectArray(Object[] loggableObjectArray) {
-        this.loggableObjectArray = loggableObjectArray;
-    }
-
-    @Override
-    public Object[] loggableObject() {
-        return getLoggableObjectArray();
+    /**
+     * Returns a StructLogger instance for source class that is generating entries
+     *
+     * @param source "Logger class source"
+     * @return StructLogger
+     */
+    public static Logger getLogger(Class<?> source) {
+        return new StructLogger(source);
     }
 }
