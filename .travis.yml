@@ -8,4 +8,4 @@ before_script:
 script:
 - ./gradlew check
 after_success:
-- codecov -t $CODECOV_TOKEN
+- bash <(curl -s https://codecov.io/bash)
