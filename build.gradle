@@ -74,8 +74,8 @@ jacocoTestReport {
 findbugs {
     effort = "max"
     reportLevel = "medium"
-    includeFilter = file("$rootProject.projectDir/findBugsIncludeFilter.xml")
-    excludeFilter = file("$rootProject.projectDir/findBugsExcludeFilter.xml")
+    includeFilter = file("$rootProject.projectDir/config/findbugs/findBugsIncludeFilter.xml")
+    excludeFilter = file("$rootProject.projectDir/config/findbugs/findBugsExcludeFilter.xml")
 }
 
 tasks.withType(FindBugs) {

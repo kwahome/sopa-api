@@ -1,0 +1,6 @@
+<FindBugsFilter>
+    <!-- Include all possible categories -->
+    <Match>
+        <Bug category="CORRECTNESS, MT_CORRECTNESS, BAD_PRACTICICE, PERFORMANCE, STYLE, SECURITY" />
+    </Match>
+</FindBugsFilter>
