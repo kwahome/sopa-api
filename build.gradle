@@ -19,7 +19,7 @@ checkstyleTest {
 }
 
 group 'io.github.kwahome.sopa'
-version '0.3.0'
+version '0.4.0'
 archivesBaseName = "sopa-api"
 description = """Configurable and extensible structured logging on top of `slf4j` API to generate easily parsable log messages in desired formats."""
 sourceCompatibility = 1.8
@@ -69,6 +69,16 @@ jacocoTestReport {
     }
 }
 
+check.dependsOn jacocoTestReport
+
+test {
+    finalizedBy jacocoTestReport
+    testLogging.showStandardStreams = true
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+}
+
 // code quality
 findbugs {
     effort = "max"
@@ -84,18 +94,10 @@ tasks.withType(FindBugs) {
     }
 }
 
-check.dependsOn test
-// build.dependsOn check
+build.dependsOn check
+
 // ensure code quality for published artifacts
 // install.dependsOn check
-
-test {
-    finalizedBy jacocoTestReport
-    testLogging.showStandardStreams = true
-    testLogging {
-        events "passed", "skipped", "failed"
-    }
-}
 
 task sourceJar(type: Jar) {
     from sourceSets.main.allSource
