@@ -155,7 +155,6 @@ publishing{
     }
     repositories {
         maven {
-            // change URLs to point to your repos, e.g. http://my.org/repo
             def releasesRepoUrl = "https://oss.sonatype.org/content/repositories/releases"
             def snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots"
             url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
@@ -167,8 +166,14 @@ publishing{
     }
 }
 
+model {
+    tasks.generatePomFileForMavenJavaPublication {
+        destination = file("$buildDir/generated-pom.xml")
+    }
+}
+
 signing {
-    sign publishing.publications.mavenJava
+    sign configurations.archives
 }
 
 javadoc {
