@@ -19,7 +19,7 @@ checkstyleTest {
 }
 
 group 'io.github.kwahome.sopa'
-version '0.4.0'
+version '0.4.0-SNAPSHOT'
 archivesBaseName = "sopa-api"
 description = """Configurable and extensible structured logging on top of `slf4j` API to generate easily parsable log messages in desired formats."""
 sourceCompatibility = 1.8
@@ -153,17 +153,17 @@ publishing{
             }
         }
     }
-    repositories {
-        maven {
-            def releasesRepoUrl = "https://oss.sonatype.org/content/repositories/releases"
-            def snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots"
-            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
-            credentials {
-                username = sonatypeUsername
-                password = sonatypePassword
-            }
-        }
-    }
+//    repositories {
+//        maven {
+//            def releasesRepoUrl = "https://oss.sonatype.org/content/repositories/releases"
+//            def snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots"
+//            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+//            credentials {
+//                username = sonatypeUsername
+//                password = sonatypePassword
+//            }
+//        }
+//    }
 }
 
 model {
