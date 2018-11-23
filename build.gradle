@@ -120,9 +120,12 @@ publishing{
     publications{
         mavenJava(MavenPublication){
             artifactId = 'sopa-api'
+
             from components.java
+
             artifact sourceJar
             artifact javadocJar
+
             pom{
                 name = 'sopa-api'
                 description ='Configurable and extensible structured logging on top of `slf4j` API to generate easily parsable log messages in desired formats.'
@@ -152,7 +155,10 @@ publishing{
     }
     repositories {
         maven {
-            url = "https://oss.sonatype.org/content/repositories/snapshots"
+            // change URLs to point to your repos, e.g. http://my.org/repo
+            def releasesRepoUrl = "https://oss.sonatype.org/content/repositories/releases"
+            def snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots"
+            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
             credentials {
                 username = sonatypeUsername
                 password = sonatypePassword
