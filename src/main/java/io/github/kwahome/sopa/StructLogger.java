@@ -50,7 +50,7 @@ public class StructLogger implements Logger {
     private Optional<LoggableObject> instanceBoundContext = Optional.empty();
 
     StructLogger(String name) {
-        slf4jLogger = org.slf4j.LoggerFactory.getLogger(name);
+        slf4jLogger = LoggerFactory.getLogger(name);
     }
 
     StructLogger(Class<?> source) {

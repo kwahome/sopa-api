@@ -30,6 +30,7 @@ import java.util.function.Function;
 import io.github.kwahome.sopa.interfaces.LogRenderer;
 import io.github.kwahome.sopa.interfaces.LoggableObject;
 import io.github.kwahome.sopa.renderers.KeyValueRenderer;
+import lombok.NonNull;
 
 /**
  * sopa configuration class.
@@ -115,12 +116,8 @@ public class StructLoggerConfig {
      *
      * @param customValueRenderer value renderer lambda
      */
-    public static void setValueRenderer(Function<Object, String> customValueRenderer) {
-        if (customValueRenderer != null) {
-            valueRenderer = customValueRenderer;
-        } else {
-            throw new RuntimeException("Value renderer cannot be null");
-        }
+    public static void setValueRenderer(@NonNull Function<Object, String> customValueRenderer) {
+        valueRenderer = customValueRenderer;
     }
 
     /**

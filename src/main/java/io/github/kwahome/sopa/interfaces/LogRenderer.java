@@ -31,12 +31,12 @@ import org.slf4j.Logger;
  * The slf4j logger is passed into every method for any internal error reporting
  * within the log renderer itself.
  *
- * @param <BuilderObject> "Builder object specific to a renderer passed around from start() till end()"
+ * @param <T> "Builder object specific to a renderer passed around from start() till end()"
  *
  * @author kelvin.wahome
  */
-public interface LogRenderer<BuilderObject> {
-    BuilderObject start(org.slf4j.Logger logger);
+public interface LogRenderer<T> {
+    T start(Logger logger);
 
     /**
      * Adds log message to the log event
@@ -46,8 +46,8 @@ public interface LogRenderer<BuilderObject> {
      * @param message log message
      * @return LogRenderer
      */
-    LogRenderer<BuilderObject> addMessage(
-            org.slf4j.Logger logger, BuilderObject builderObject, String message);
+    LogRenderer<T> addMessage(
+            Logger logger, T builderObject, String message);
 
     /**
      * Adds formatted key=value pairs to the log event
@@ -58,8 +58,8 @@ public interface LogRenderer<BuilderObject> {
      * @param value value
      * @return LogRenderer
      */
-    LogRenderer<BuilderObject> addKeyValue(
-            org.slf4j.Logger logger, BuilderObject builderObject, String key, Object value);
+    LogRenderer<T> addKeyValue(
+            Logger logger, T builderObject, String key, Object value);
 
     /**
      * Returns the formatted log message
@@ -68,5 +68,5 @@ public interface LogRenderer<BuilderObject> {
      * @param builderObject BuilderObject
      * @return String
      */
-    String end(Logger logger, BuilderObject builderObject);
+    String end(Logger logger, T builderObject);
 }
