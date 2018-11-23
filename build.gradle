@@ -65,7 +65,6 @@ jar {
 jacocoTestReport {
     reports {
         xml.enabled true
-        xml.destination file("${buildDir}/reports/jacoco/report.xml")
         html.enabled false
         csv.enabled false
     }
@@ -151,15 +150,15 @@ publishing{
             }
         }
     }
-//    repositories {
-//        maven {
-//            url = "https://oss.sonatype.org/service/local/staging/deploy/maven2"
-//            credentials {
-//                username = ossrhUsername
-//                password = ossrhPassword
-//            }
-//        }
-//    }
+    repositories {
+        maven {
+            url = "https://oss.sonatype.org/content/repositories/snapshots"
+            credentials {
+                username = sonatypeUsername
+                password = sonatypePassword
+            }
+        }
+    }
 }
 
 signing {
