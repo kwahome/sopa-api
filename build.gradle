@@ -116,6 +116,11 @@ artifacts {
     archives javadocJar
 }
 
+if (project.hasProperty("TRAVIS_CI")) {
+    def sonatypeUsername = System.getenv("SONATYPE_USER")
+    def sonatypePassword = System.getenv("SONATYPE_PASS")
+}
+
 publishing{
     publications{
         mavenJava(MavenPublication){
