@@ -6,6 +6,12 @@ jdk:
 before_script:
 - chmod +x gradlew
 script:
-- ./gradlew check
+  # temporary due to publishing failures
+  # should revert to ./gradlew check
+- ./gradlew checkStyleMain
+- ./gradlew checkStyleTest
+- ./gradlew findbugsMain
+- ./gradlew findbugsTest
+- ./gradlew test
 after_success:
-- codecov -t $CODECOV_TOKEN
+- bash <(curl -s https://codecov.io/bash)
