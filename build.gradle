@@ -116,11 +116,13 @@ artifacts {
     archives javadocJar
 }
 
-if (project.hasProperty("TRAVIS_CI")) {
-    def sonatypeUsername = System.getenv("SONATYPE_USER")
-    def sonatypePassword = System.getenv("SONATYPE_PASS")
-}
+def $username = sonatypeUsername
+def $password = sonatypePassword
 
+if (project.hasProperty("TRAVIS_CI")) {
+    $username = System.getenv("SONATYPE_USER")
+    $password = System.getenv("SONATYPE_PASS")
+}
 publishing{
     publications{
         mavenJava(MavenPublication){
@@ -164,8 +166,8 @@ publishing{
             def snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots"
             url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
             credentials {
-                username = sonatypeUsername
-                password = sonatypePassword
+                username = $username
+                password = $password
             }
         }
     }
