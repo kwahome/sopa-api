@@ -16,7 +16,7 @@ You might be wondering why I just couldn't use existing libraries rather than fa
 
 My short, not so convincing, poorly put together reason has something to do with being lazy; the good lazy. You see, when tackling the structured logging problem, I came across a number of good libraries (built on top of `slf4j` like I wanted) that I must admit I liked eventually borrowing a lot from. 
 
-However, attributable to my laziness, I needed a set of extra features to allow me dump what I needed in my logs with minimal lines of code and minimal to zero repetition; chief amongst them being the ability to `bind` context to my logger; context which I would have had to repeat over on every log line.
+However, attributable to my laziness, I craved a set of extra features to allow me dump what I needed in my logs with minimal lines of code and minimal to zero repetition; chief amongst them being the ability to `bind` context to my logger; context which I would have had to repeat over on every log line.
 
 ## Overview
 Log files are to developers what Mjöllnir is to Thor. 
@@ -102,7 +102,7 @@ public interface Logger {
 }
 ```
 ### Configuration
-`sopa` is a PnP library requiring no configuration to get started on because ships with defaults. It defaults to a `KeyValueRenderer` to format log messages to the standard `key=value` comma separated pairs.
+`sopa` is a PnP library requiring no configuration to get started on because it ships with defaults. It defaults to a `KeyValueRenderer` to format log messages to the standard `key=value` comma separated pairs.
 
 The library is also built to be Bring Your Own ... compliant thus has `StructLoggerConfig` class with static methods to override default behaviour such as the renderer in use.
 
@@ -118,7 +118,7 @@ It proscribes the format (structure) you desire in your logs.
 
 You can configure the renderer the logger will use via the `setLogRenderer` setter with the only requirement being that the renderer passed in implements the `LogRenderer` interface; e.g.
 
-To configure the `JSONRenderer` as the preferred log renderer:
+To configure the `JSONRenderer` (or `YAMLRenderer` which `sopa` ships with) as the preferred log renderer:
 
 ```java
 import io.github.kwahome.sopa.renderers.JSONRenderer;
@@ -178,8 +178,6 @@ import io.github.kwahome.sopa.StructLoggerConfig;
 @SpringBootApplication
 public class MyApplication {
     
-    Function<Object, String> myValueRenderer = (value) -> value;
-    
     StructLoggerConfig.setContextSupplier("environment", getEnvironment(), "host", getHost());
 
     public static void main(String[] args) {
@@ -189,7 +187,7 @@ public class MyApplication {
 ```
 
 `setContextSupplier` setter method is overloaded to also accept a `Map<String, Object>` and a POJO implementing the `LoggableObject` interface.
-More details on the usages of the two in the section about logging below, so please continue reading 😊
+There's a detailed explanation on their usage in the section about logging below, so please continue reading 😊
 
 ##### d) Log Entries Separator
 For visual readability, `,` is appended by default between key=value entries in a log message.
@@ -207,8 +205,6 @@ import io.github.kwahome.sopa.StructLoggerConfig;
  */
 @SpringBootApplication
 public class MyApplication {
-    
-    Function<Object, String> myValueRenderer = (value) -> value;
     
     StructLoggerConfig.setLogEntriesSeparator(";");
 
@@ -303,11 +299,11 @@ which would result in a log event:
 ```
 
 #####  d) Mixing up the alternatives
-Though not advisable because of the ensuing confusion, it's possible to pass in a mix of `["key", "value"]` pairs, `Map<String, Object>` objects and `LoggableObject` objects in one call to the APIs.
+Though not advisable (because of the confusion that will ensue many light years later when you are older, probably wiser and looking at your code with disgust), it is possible to pass in a mix of `["key", "value"]` pairs, `Map<String, Object>` objects and `LoggableObject` objects in one call to the logging APIs.
 
-What's more, `Map<String, Object>` or a `LoggableObject` object passed in as values to keys in a pair are not iterated over but rather logged as values of the respective keys.
+What's more is that `Map<String, Object>` or a `LoggableObject` object passed in as values to keys in a pair are not iterated over but rather logged as values of the respective keys.
 
-The wizard of `sopa` handling it all beneath, without being overly presumptuous, is endowed with enough level of wit to discern them apart.
+The wizard of `sopa` handling it all beneath, without being overly presumptuous, is endowed with enough level of wit to discern and tell them apart.
 
 Example:
 ```java
@@ -361,7 +357,173 @@ which would result in a log event like:
 
 In the above example, the exception will still get logged even if the `Throwable` object was passed in as the first param to the `error` API with only the order of entries in the log message being a wee bit different.
 
-Also, the same behaviour can be observed on all other logging level APIs but perhaps you'll most likely never log an exception on any other level apart from `error` because why would you?
+The same behaviour can be observed on all other logging level APIs but perhaps you'll most likely never log an exception on any other level apart from `error` because why would you?
+
+### Logger Context
+To make logging less painful and more powerful, `sopa` allows you to bind, re-binding and unbind key-value pairs to your loggers to ensure they are present in every following logging call without having to repeat them over and over.
+
+Two types of logger contexts exist:
+
+##### 1. Global Context
+This is application specific key-value pairs that are desired on every log entry (e.g. `host` or `environment`) and would usually be bound to the logger class once.
+This is the context set using `setContextSupplier` as described in the configuration section earlier.
+
+Example (using a `Map`; the earlier example used `key-value` params):
+
+```java
+import io.github.kwahome.sopa.StructLoggerConfig;
+
+/**
+ * Main application class.
+ */
+@SpringBootApplication
+public class MyApplication {
+    Map<String, Object> globalLoggerContext = new HashMap<>();
+    globalLoggerContext.put("environment", getEnvironment())
+    globalLoggerContext.put("host", getHost())
+    
+    StructLoggerConfig.setContextSupplier(globalLoggerContext);
+
+    public static void main(String[] args) {
+        SpringApplication.run(MyApplication.class, args);
+    }
+}
+```
+
+Any call to the logger will bear the set global context.
+
+It's strongly advisable to do this in the mean thread for the same reasons highlighted in the renderer section above.
+
+##### 2. Instance Bound Context
+Similar to the global context, `sopa` allows you to bind key-value pairs that appear on every log event generated by a `Logger` instance to avoid duplicating cross-cutting concerns on all calls to the logging APIs.
+
+The `Logger` interface exposes `newBind(Object...params)`, `bind(Object...params)` and `unbind(Object...params)` methods that accept in `["key", "value"]` pairs, `Map<String, Object>` objects or `LoggableObject` objects for the purpose of binding and clearing logger context.
+
+> `newBind(Object...params)` allows you to bind new context and overwrite any existing
+
+> `bind(Object...params)` allows you to update bound context
+
+> `unbind(Object...params)` allows you to removing key-values from bound context
+
+Examples:
+
+`newBind()`
+```java
+private static final Logger LOGGER = LoggerFactory.getLogger(MyClass.class);
+
+public class MyClass {
+    MyClass() {
+        
+    }
+    
+    public void myMethod() {
+        Map<String, Object> context = new HashMap<>();
+        context.put("user", MyClass.getUser());
+        context.put("requestId", MyClass.getRequestId());
+        LOGGER.newBind(context); // you can pass in key-value pairs in an array or a LoggableObject. Or a mix of those options
+        
+        // some code that does something extra-ordinary goes here
+        // some more code (or bugs)
+        LOGGER.info("start");
+        
+        // some other code
+        // and more where that came from
+        LOGGER.info("end");
+    }
+}
+```
+which would result in a log event:
+
+```
+2018-01-27 16:17:58 INFO 90413 --- [nio-8080-exec-8] my.package.MyClass  : start, user=johndoe@gmail.com, requestId=xyz123dgew
+
+2018-01-27 16:17:58 INFO 90413 --- [nio-8080-exec-8] my.package.MyClass  : end, user=johndoe@gmail.com, requestId=xyz123dgew
+```
+
+`bind()`
+
+```java
+private static final Logger LOGGER = LoggerFactory.getLogger(MyClass.class);
+
+public class MyClass {
+    MyClass() {
+        
+    }
+    
+    public void myMethod() {
+        Map<String, Object> context = new HashMap<>();
+        context.put("user", getUser());
+        context.put("requestId", getRequestId());
+        LOGGER.newBind(context); // you can pass in key-value pairs in an array or a LoggableObject. Or a mix of those options
+        // some code that does something extra-ordinary goes here
+        LOGGER.info("received");
+        
+        // several quantum leaps of code later
+        // you hit some new info that is of significance
+        LOGGER.bind("age", getAge(), "gender", getGender());
+        
+        // some more code (or bugs)
+        LOGGER.info("start");
+        
+        // some other code
+        // and more where that came from
+        LOGGER.info("end");
+    }
+}
+```
+which would result in a log event:
+
+```
+2018-01-27 16:17:58 INFO 90413 --- [nio-8080-exec-8] my.package.MyClass  : received, user=johndoe@gmail.com, requestId=xyz123dgew
+
+2018-01-27 16:17:58 INFO 90413 --- [nio-8080-exec-8] my.package.MyClass  : start, user=johndoe@gmail.com, requestId=xyz123dgew, age=20, gender=Female
+
+2018-01-27 16:17:58 INFO 90413 --- [nio-8080-exec-8] my.package.MyClass  : end, user=johndoe@gmail.com, requestId=xyz123dgew, age=20, gender=Female
+```
+
+`unbind()`
+
+```java
+private static final Logger LOGGER = LoggerFactory.getLogger(MyClass.class);
+
+public class MyClass {
+    MyClass() {
+        
+    }
+    
+    public void myMethod() {
+        Map<String, Object> context = new HashMap<>();
+        context.put("user", getUser());
+        context.put("requestId", getRequestId());
+        LOGGER.newBind(context); // you can pass in key-value pairs in an array or a LoggableObject. Or a mix of those options
+        // some code that does something extra-ordinary goes here
+        LOGGER.info("received");
+        //...
+        // several quantum leaps of code later
+        // you hit some new info that is of significance
+        LOGGER.bind("age", getAge(), "gender", getGender());
+        //...
+        // some more code (or bugs)
+        LOGGER.info("start");
+       // ...
+        // some other code
+        // and more where that came from
+        // ...
+        // decide you don't need some of the bound info in logs from this section
+        LOGGER.unbind("age", getAge());
+        LOGGER.info("end");
+    }
+}
+```
+which would result in a log event:
+
+```
+2018-01-27 16:17:58 INFO 90413 --- [nio-8080-exec-8] my.package.MyClass  : received, user=johndoe@gmail.com, requestId=xyz123dgew
+
+2018-01-27 16:17:58 INFO 90413 --- [nio-8080-exec-8] my.package.MyClass  : start, user=johndoe@gmail.com, requestId=xyz123dgew, age=20, gender=Female
+
+2018-01-27 16:17:58 INFO 90413 --- [nio-8080-exec-8] my.package.MyClass  : end, user=johndoe@gmail.com, requestId=xyz123dgew, gender=Female
+```
 
 ## Contributing
 Please read [CONTRIBUTING.md](https://github.com/kwahome/sopa-api/blob/master/CONTRIBUTING.md) and [CODE_OF_CONDUCT.md](https://github.com/kwahome/sopa-api/blob/master/CODE_OF_CONDUCT.md) for details on our code of conduct, and the process for submitting pull requests to us.
