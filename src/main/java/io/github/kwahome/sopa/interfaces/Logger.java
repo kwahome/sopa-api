@@ -27,10 +27,10 @@ package io.github.kwahome.sopa.interfaces;
 /**
  * Core standard structured logger interface
  *
- * @author kelvin.wahome
+ * @author Kelvin Wahome
  */
 public interface Logger {
-    // slf4j APIs
+    // slf4j wrapped APIs
     void error(String message, Object...params);
     void warn(String message, Object...params);
     void info(String message, Object...params);

@@ -33,7 +33,7 @@ import org.slf4j.Logger;
  *
  * @param <T> "Builder object specific to a renderer passed around from start() till end()"
  *
- * @author kelvin.wahome
+ * @author Kelvin Wahome
  */
 public interface LogRenderer<T> {
     T start(Logger logger);

@@ -35,7 +35,7 @@ import lombok.experimental.UtilityClass;
 /**
  * Helper utilities
  *
- * @author kelvin.wahome
+ * @author Kelvin Wahome
  */
 @UtilityClass
 public class Helpers {

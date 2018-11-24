@@ -38,7 +38,7 @@ import io.github.kwahome.sopa.utils.Helpers;
 /**
  * Testing helper utilities
  *
- * @author kelvin.wahome
+ * @author Kelvin Wahome
  */
 public class HelperUtilsTests {
     private Object[] objectArray;

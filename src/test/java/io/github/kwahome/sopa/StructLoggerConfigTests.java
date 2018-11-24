@@ -24,34 +24,8 @@
 
 package io.github.kwahome.sopa;
 
-import io.github.kwahome.sopa.interfaces.LoggableObject;
-
 /**
- * Generic loggable object implementation.
- *
- * For use in dynamically adding logger contexts
- *
  * @author Kelvin Wahome
  */
-public class GenericLoggableObject implements LoggableObject {
-    private Object[] loggableObjectArray = new Object[]{};
-
-    GenericLoggableObject(){}
-
-    public GenericLoggableObject(Object[] loggableObjectArray) {
-        this.loggableObjectArray = loggableObjectArray;
-    }
-
-    public Object[] getLoggableObjectArray() {
-        return loggableObjectArray;
-    }
-
-    public void setLoggableObjectArray(Object[] loggableObjectArray) {
-        this.loggableObjectArray = loggableObjectArray;
-    }
-
-    @Override
-    public Object[] loggableObject() {
-        return getLoggableObjectArray();
-    }
+public class StructLoggerConfigTests {
 }

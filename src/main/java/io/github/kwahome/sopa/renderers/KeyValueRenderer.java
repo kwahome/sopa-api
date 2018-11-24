@@ -35,23 +35,23 @@ import io.github.kwahome.sopa.interfaces.LogRenderer;
  *
  * Used as the default out of the box LogRenderer
  *
- * @author kelvin.wahome
+ * @author Kelvin Wahome
  */
 public class KeyValueRenderer implements LogRenderer<StringBuilder> {
     private static final KeyValueRenderer INSTANCE = new KeyValueRenderer();
 
     /**
-     * Returns a new KeyValueRenderer instance if it does not exist or the existing instance
+     * Returns a new {@link KeyValueRenderer} instance if it does not exist or the existing instance
      * ig it does
      *
-     * @return KeyValueRenderer
+     * @return {@link KeyValueRenderer}
      */
     public static KeyValueRenderer getInstance() {
         return INSTANCE;
     }
 
     /**
-     * ThreadLocal StringBuilder instance that can only read and written by the same thread
+     * ThreadLocal {@link StringBuilder} instance that can only read and written by the same thread
      */
     private final ThreadLocal<StringBuilder> threadLocalStringBuilder = new ThreadLocal<StringBuilder>() {
         @Override

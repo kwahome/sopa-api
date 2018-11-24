@@ -41,7 +41,7 @@ import lombok.RequiredArgsConstructor;
 /**
  * Concrete implementation of the Logger interface
  *
- * @author kelvin.wahome
+ * @author Kelvin Wahome
  */
 @RequiredArgsConstructor
 public class StructLogger implements Logger {
@@ -55,6 +55,66 @@ public class StructLogger implements Logger {
 
     StructLogger(Class<?> source) {
         slf4jLogger = LoggerFactory.getLogger(source);
+    }
+
+    @Override
+    public void error(String message, Object... params) {
+        if (slf4jLogger.isErrorEnabled()) {
+            log(Level.ERROR, message, params);
+        }
+    }
+
+    @Override
+    public void warn(String message, Object... params) {
+        if (slf4jLogger.isWarnEnabled()) {
+            log(Level.WARN, message, params);
+        }
+    }
+
+    @Override
+    public void info(String message, Object... params) {
+        if (slf4jLogger.isInfoEnabled()) {
+            log(Level.INFO, message, params);
+        }
+    }
+
+    @Override
+    public void debug(String message, Object... params) {
+        if (slf4jLogger.isDebugEnabled()) {
+            log(Level.DEBUG, message, params);
+        }
+    }
+
+    @Override
+    public void trace(String message, Object... params) {
+        if (slf4jLogger.isTraceEnabled()) {
+            log(Level.TRACE, message, params);
+        }
+    }
+
+    @Override
+    public boolean isErrorEnabled() {
+        return slf4jLogger.isErrorEnabled();
+    }
+
+    @Override
+    public boolean isWarnEnabled() {
+        return slf4jLogger.isWarnEnabled();
+    }
+
+    @Override
+    public boolean isInfoEnabled() {
+        return slf4jLogger.isInfoEnabled();
+    }
+
+    @Override
+    public boolean isDebugEnabled() {
+        return slf4jLogger.isDebugEnabled();
+    }
+
+    @Override
+    public boolean isTraceEnabled() {
+        return slf4jLogger.isTraceEnabled();
     }
 
     public org.slf4j.Logger getSlf4jLogger() {
@@ -169,8 +229,7 @@ public class StructLogger implements Logger {
                 stringObjectMap.putAll(Helpers.objectArrayToMap(loggableObject.loggableObject()));
             } else if (param instanceof Map &&
                     (i % 2 == 0 || (i % 2 != 0 && !validateKey(params[i - 1], null, false)))) {
-                Map<String, Object> map = (Map<String, Object>) param;
-                stringObjectMap.putAll(map);
+                stringObjectMap.putAll((Map<String, Object>) param);
             } else if (proceed) {
                 // dynamic key-value pairs being passed in
                 // process the key-value pairs only if no errors were encountered and order can is reliably correct
@@ -186,14 +245,14 @@ public class StructLogger implements Logger {
                         } else {
                             slf4jLogger.warn(
                                     String.format("%s key `%s` ignored because it exists in the global context with " +
-                                    "value `%s` which takes precedence.", StructLoggerConfig.getStructLog4jTag(), key,
+                                    "value `%s` which takes precedence.", StructLoggerConfig.getSopaLoggerTag(), key,
                                     globalLoggerContext.get(key)));
                         }
                     }
                 } else {
                     slf4jLogger.warn(String.format("%s odd number of parameters (%s) passed in. " +
                             "The value pair for key `%s` not found thus it has been ignored.",
-                            StructLoggerConfig.getStructLog4jTag(), params.length, param));
+                            StructLoggerConfig.getSopaLoggerTag(), params.length, param));
                 }
             }
         }
@@ -218,8 +277,7 @@ public class StructLogger implements Logger {
                         Helpers.objectArrayToMap(loggableObject.loggableObject()).entrySet());
             } else if (param instanceof Map &&
                     (i % 2 == 0 || (i % 2 != 0 && !validateKey(params[i - 1], null, false)))) {
-                Map<String, Object> map = (Map<String, Object>) param;
-                stringObjectMap.entrySet().removeAll(map.entrySet());
+                stringObjectMap.entrySet().removeAll(((Map<String, Object>) param).entrySet());
             } else if (proceed) {
                 // process the key-value pairs only if no errors were encountered and order can is reliably correct
                 // next field is construed to be the value
@@ -234,79 +292,19 @@ public class StructLogger implements Logger {
                 } else {
                     slf4jLogger.warn(String.format("%s odd number of parameters (%s) passed in. " +
                                     "The value pair for key `%s` not found thus it has been ignored.",
-                            StructLoggerConfig.getStructLog4jTag(), params.length, param));
+                            StructLoggerConfig.getSopaLoggerTag(), params.length, param));
                 }
             }
         }
         return Helpers.mapToObjectArray(stringObjectMap);
     }
 
-    @Override
-    public void error(String message, Object... params) {
-        if (slf4jLogger.isErrorEnabled()) {
-            log(Level.ERROR, message, params);
-        }
-    }
-
-    @Override
-    public void warn(String message, Object... params) {
-        if (slf4jLogger.isWarnEnabled()) {
-            log(Level.WARN, message, params);
-        }
-    }
-
-    @Override
-    public void info(String message, Object... params) {
-        if (slf4jLogger.isInfoEnabled()) {
-            log(Level.INFO, message, params);
-        }
-    }
-
-    @Override
-    public void debug(String message, Object... params) {
-        if (slf4jLogger.isDebugEnabled()) {
-            log(Level.DEBUG, message, params);
-        }
-    }
-
-    @Override
-    public void trace(String message, Object... params) {
-        if (slf4jLogger.isTraceEnabled()) {
-            log(Level.TRACE, message, params);
-        }
-    }
-
-    @Override
-    public boolean isErrorEnabled() {
-        return slf4jLogger.isErrorEnabled();
-    }
-
-    @Override
-    public boolean isWarnEnabled() {
-        return slf4jLogger.isWarnEnabled();
-    }
-
-    @Override
-    public boolean isInfoEnabled() {
-        return slf4jLogger.isInfoEnabled();
-    }
-
-    @Override
-    public boolean isDebugEnabled() {
-        return slf4jLogger.isDebugEnabled();
-    }
-
-    @Override
-    public boolean isTraceEnabled() {
-        return slf4jLogger.isTraceEnabled();
-    }
-
     /**
-     * Handle LoggableObject implementations
+     * Handle {@link LoggableObject} implementations
      *
-     * @param logRenderer "LogRenderer implementation"
-     * @param builderObject "Object builder"
-     * @param loggableObject "Loggable object"
+     * @param logRenderer "{@link LogRenderer <T>} implementation"
+     * @param builderObject "{@link Object} builder"
+     * @param loggableObject "{@link LoggableObject}"
      */
     private void handleLoggableObject(
             LogRenderer<Object> logRenderer, Object builderObject, @NonNull LoggableObject loggableObject) {
@@ -323,7 +321,7 @@ public class StructLogger implements Logger {
             size = size - 1;
             slf4jLogger.warn(String.format("%s odd number of parameters (%s) returned from %s.loggableObject(). " +
                     "The value pair for key `%s` not found thus it has been ignored.",
-                    StructLoggerConfig.getStructLog4jTag(), params.getClass().getName(), params.length, params[size]));
+                    StructLoggerConfig.getSopaLoggerTag(), params.getClass().getName(), params.length, params[size]));
 
         }
         for (int i = 0; i < size; i = i + 2) {
@@ -332,9 +330,9 @@ public class StructLogger implements Logger {
     }
 
     /**
-     * Common logic for handling keys.
+     * Common logic for handling/rendering a key-value pair.
      *
-     * Returns true/false depending on whether it was successful or not
+     * Returns true/false which is dependent on success or not thereof
      *
      * @param logRenderer "LogRenderer implementation"
      * @param builderObject "Object builder"
@@ -353,6 +351,14 @@ public class StructLogger implements Logger {
         return valid;
     }
 
+    /**
+     * Handle passed in {@link Map <String, Object>} objects containing key, value loggable entries
+     * to be iterated over as key-value pairs
+     *
+     * @param logRenderer {@link LogRenderer <T>}
+     * @param builderObject {@link Object}
+     * @param map {@link Map <String, Object>}
+     */
     private void handleMap(LogRenderer<Object> logRenderer, Object builderObject, @NonNull Map<String, Object> map) {
         Object[] mapKeySet = map.keySet().toArray();
         Object[] mapValues = map.values().toArray();
@@ -361,7 +367,20 @@ public class StructLogger implements Logger {
         }
     }
 
-    private boolean validateKey(Object keyObject, LoggableObject loggableSourceObject, boolean warningLog) {
+    /**
+     * Validates a paseed in key object by checking if it's a string that does not contain spaces in which
+     * case true is returned and false otherwise.
+     *
+     * boolean warningLog tells this method whether to write a warning log or not.
+     * Some usages are retrospective while deciding whether a key for a value has already been processed
+     * thus logging may not be desired always.
+     *
+     * @param keyObject {@link Object} key object
+     * @param loggableSourceObject {@link LoggableObject} loggable object that's the source of the key
+     * @param warningLog {@link boolean}
+     * @return boolean
+     */
+    private boolean validateKey(@NonNull Object keyObject, LoggableObject loggableSourceObject, boolean warningLog) {
         boolean valid = false;
         // key must be a String
         if (keyObject instanceof String) {
@@ -372,22 +391,20 @@ public class StructLogger implements Logger {
             } else if (warningLog) {
                 if (loggableSourceObject == null) {
                     slf4jLogger.warn(String.format("%s key `%s` with spaces passed in.",
-                            StructLoggerConfig.getStructLog4jTag(), key));
+                            StructLoggerConfig.getSopaLoggerTag(), key));
                 } else {
                     slf4jLogger.warn(String.format("%s key `%s` with spaces passed in from %s.loggableObject()",
-                            StructLoggerConfig.getStructLog4jTag(), key, loggableSourceObject.getClass().getName()));
+                            StructLoggerConfig.getSopaLoggerTag(), key, loggableSourceObject.getClass().getName()));
                 }
             }
         } else if (warningLog) {
             if (loggableSourceObject == null) {
                 slf4jLogger.warn(String.format("%s key `%s` expected to be of type String but `%s` passed in.",
-                        StructLoggerConfig.getStructLog4jTag(), keyObject,
-                        keyObject != null ? keyObject.getClass().getName() : "null"));
+                        StructLoggerConfig.getSopaLoggerTag(), keyObject, keyObject.getClass().getName()));
             } else {
                 slf4jLogger.warn(String.format(
                         "%s key `%s` expected to be of type String but `%s` passed in from %s.loggableObject()",
-                        StructLoggerConfig.getStructLog4jTag(), keyObject,
-                        keyObject != null ? keyObject.getClass().getName() : "null",
+                        StructLoggerConfig.getSopaLoggerTag(), keyObject, keyObject.getClass().getName(),
                         loggableSourceObject.getClass().getName()));
             }
 
@@ -423,9 +440,7 @@ public class StructLogger implements Logger {
                             slf4jLogger, builderObject, "errorMessage", getCauseErrorMessage(throwable));
                 } else if (param instanceof Map &&
                         (i % 2 == 0 || (i % 2 != 0 && !validateKey(params[i - 1], null, false)))) {
-
-                    Map<String, Object> map = (Map<String, Object>) param;
-                    handleMap(logRenderer, builderObject, map);
+                    handleMap(logRenderer, builderObject, (Map<String, Object>) param);
                 } else if (processKeyValues) {
                     // dynamic key-value pairs being passed in
                     // process the key-value pairs only if no errors were encountered and order can is reliably correct
@@ -437,7 +452,7 @@ public class StructLogger implements Logger {
                     } else {
                         slf4jLogger.warn(String.format("%s odd number of parameters (%s) passed in. " +
                                         "The value pair for key `%s` not found thus it has been ignored.",
-                                StructLoggerConfig.getStructLog4jTag(), params.length, param));
+                                StructLoggerConfig.getSopaLoggerTag(), params.length, param));
                     }
                 }
             }
@@ -449,12 +464,12 @@ public class StructLogger implements Logger {
             log(level, logRenderer.end(slf4jLogger, builderObject), throwable);
         } catch (Exception ex) {
             slf4jLogger.error(String.format(
-                    "%s unexpected logger error `%s`.", StructLoggerConfig.getStructLog4jTag(), ex.getMessage()), ex);
+                    "%s unexpected logger error `%s`.", StructLoggerConfig.getSopaLoggerTag(), ex.getMessage()), ex);
         }
     }
 
     /**
-     * {@link #log(Level, String, Throwable)} overload that calls {@link #slf4jLogger} method
+     * {@link #log(Level, String, Object...)} overload that calls {@link #slf4jLogger} method
      * handling the {@link Level} passed with a formatted structured message string and a
      * {@link Throwable} if any
      *
