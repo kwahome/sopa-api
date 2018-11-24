@@ -29,7 +29,7 @@ import io.github.kwahome.sopa.interfaces.Logger;
 /**
  * sopa logger factory returning a StructLogger instance
  *
- * @author kelvin.wahome
+ * @author Kelvin Wahome
  */
 public class LoggerFactory {
     /**

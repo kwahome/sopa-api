@@ -24,10 +24,75 @@
 
 package io.github.kwahome.sopa.renderers;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.Yaml;
+
+import io.github.kwahome.sopa.StructLoggerConfig;
+import io.github.kwahome.sopa.interfaces.LogRenderer;
+
 /**
  * Basic YAML renderer.
  *
- * @author kelvin.wahome
+ * @author Kelvin Wahome
  */
-public class YAMLRenderer {
+public class YAMLRenderer implements LogRenderer<Map<String, String>> {
+
+    /**
+     * ThreadLocal {@link Yaml} instance that can only read and written by the same thread
+     */
+    private static final ThreadLocal<Yaml> YAML = new ThreadLocal<Yaml>() {
+        // for thread safety
+        @Override
+        protected Yaml initialValue() {
+            DumperOptions options = new DumperOptions();
+            options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+            options.setDefaultScalarStyle(DumperOptions.ScalarStyle.PLAIN);
+            return new Yaml(options);
+        }
+    };
+
+    private static final YAMLRenderer INSTANCE = new YAMLRenderer();
+
+    /**
+     * Returns a new {@link YAMLRenderer} instance if it does not exist or the existing instance
+     * ig it does
+     *
+     * @return {@link YAMLRenderer}
+     */
+    public static YAMLRenderer getInstance() {
+        return INSTANCE;
+    }
+
+    @Override
+    public final Map<String, String> start(Logger logger) {
+        return new HashMap<>(10);
+    }
+
+    @Override
+    public final LogRenderer<Map<String, String>> addMessage(
+            Logger logger, Map<String, String> builderObject, String message) {
+        builderObject.put("message", message);
+        return this;
+    }
+
+    @Override
+    public final LogRenderer<Map<String, String>> addKeyValue(
+            Logger logger, Map<String, String> builderObject, String key, Object value) {
+        if ("message".equals(key)) {
+            key = "message1";
+            logger.warn(String.format("%s key `message` renamed to `%s` to avoid overriding default log message field.",
+                    StructLoggerConfig.getSopaLoggerTag(), key));
+        }
+        builderObject.put(key, String.valueOf(value));
+        return this;
+    }
+
+    @Override
+    public final String end(Logger logger, Map<String, String> builderObject) {
+        return YAML.get().dump(builderObject).trim();
+    }
 }

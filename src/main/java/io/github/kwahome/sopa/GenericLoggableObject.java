@@ -31,7 +31,7 @@ import io.github.kwahome.sopa.interfaces.LoggableObject;
  *
  * For use in dynamically adding logger contexts
  *
- * @author kelvin.wahome
+ * @author Kelvin Wahome
  */
 public class GenericLoggableObject implements LoggableObject {
     private Object[] loggableObjectArray = new Object[]{};

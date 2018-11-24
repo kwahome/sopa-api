@@ -30,6 +30,9 @@ import javax.json.Json;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonWriter;
 
+import org.slf4j.Logger;
+
+import io.github.kwahome.sopa.StructLoggerConfig;
 import io.github.kwahome.sopa.interfaces.LogRenderer;
 
 /**
@@ -37,38 +40,40 @@ import io.github.kwahome.sopa.interfaces.LogRenderer;
  *
  * Formats using Glassfish JSON library as it has minimal dependencies.
  *
- * @author kelvin.wahome
+ * @author Kelvin Wahome
  */
 public class JSONRenderer implements LogRenderer<JsonObjectBuilder> {
-    private static final String MESSAGE_KEY_NAME = "message";
-    private static final String CUSTOM_MESSAGE_KEY_NAME = "custom_message";
-
     private static final JSONRenderer INSTANCE = new JSONRenderer();
+
+    /**
+     * Returns a new {@link JSONRenderer} instance if it does not exist or the existing instance
+     * ig it does
+     *
+     * @return {@link JSONRenderer}
+     */
     public static JSONRenderer getInstance() {
         return INSTANCE;
     }
 
     @Override
-    public final JsonObjectBuilder start(org.slf4j.Logger log) {
+    public final JsonObjectBuilder start(Logger logger) {
         return Json.createObjectBuilder();
     }
 
     @Override
     public final LogRenderer<JsonObjectBuilder> addMessage(
-            org.slf4j.Logger log, JsonObjectBuilder jsonObjectBuilder, String message) {
-        jsonObjectBuilder.add(MESSAGE_KEY_NAME, message);
+            Logger logger, JsonObjectBuilder jsonObjectBuilder, String message) {
+        jsonObjectBuilder.add("message", message);
         return this;
     }
 
     @Override
     public final LogRenderer<JsonObjectBuilder> addKeyValue(
-            org.slf4j.Logger log, JsonObjectBuilder jsonObjectBuilder, String key, Object value) {
-        // avoid overriding the "message" field
-        if (key.equals(MESSAGE_KEY_NAME)) {
-            key = CUSTOM_MESSAGE_KEY_NAME;
-            log.warn(String.format(
-                    "Key %s renamed to %s to avoid overriding default JSON message field.",
-                    MESSAGE_KEY_NAME, CUSTOM_MESSAGE_KEY_NAME));
+            Logger logger, JsonObjectBuilder jsonObjectBuilder, String key, Object value) {
+        if ("message".equals(key)) {
+            key = "message1";
+            logger.warn(String.format("%s key `message` renamed to `%s` to avoid overriding default log message field.",
+                    StructLoggerConfig.getSopaLoggerTag(), key));
         }
 
         // different methods per type
@@ -89,7 +94,7 @@ public class JSONRenderer implements LogRenderer<JsonObjectBuilder> {
     }
 
     @Override
-    public final String end(org.slf4j.Logger log, JsonObjectBuilder jsonObjectBuilder) {
+    public final String end(Logger logger, JsonObjectBuilder jsonObjectBuilder) {
         StringWriter stringWriter = new StringWriter();
         try (JsonWriter jsonWriter = Json.createWriter(stringWriter)) {
             jsonWriter.writeObject(jsonObjectBuilder.build());

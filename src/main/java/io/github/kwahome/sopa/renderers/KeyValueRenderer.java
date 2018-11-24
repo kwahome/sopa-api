@@ -26,6 +26,7 @@ package io.github.kwahome.sopa.renderers;
 
 import org.slf4j.Logger;
 
+import io.github.kwahome.sopa.StructLoggerConfig;
 import io.github.kwahome.sopa.interfaces.LogRenderer;
 
 /**
@@ -35,23 +36,23 @@ import io.github.kwahome.sopa.interfaces.LogRenderer;
  *
  * Used as the default out of the box LogRenderer
  *
- * @author kelvin.wahome
+ * @author Kelvin Wahome
  */
 public class KeyValueRenderer implements LogRenderer<StringBuilder> {
     private static final KeyValueRenderer INSTANCE = new KeyValueRenderer();
 
     /**
-     * Returns a new KeyValueRenderer instance if it does not exist or the existing instance
+     * Returns a new {@link KeyValueRenderer} instance if it does not exist or the existing instance
      * ig it does
      *
-     * @return KeyValueRenderer
+     * @return {@link KeyValueRenderer}
      */
     public static KeyValueRenderer getInstance() {
         return INSTANCE;
     }
 
     /**
-     * ThreadLocal StringBuilder instance that can only read and written by the same thread
+     * ThreadLocal {@link StringBuilder} instance that can only read and written by the same thread
      */
     private final ThreadLocal<StringBuilder> threadLocalStringBuilder = new ThreadLocal<StringBuilder>() {
         @Override
@@ -79,7 +80,7 @@ public class KeyValueRenderer implements LogRenderer<StringBuilder> {
 
     @Override
     public LogRenderer<StringBuilder> addKeyValue(Logger logger, StringBuilder stringBuilder, String key, Object val) {
-        stringBuilder.append(",").append(" ").append(key).append("=");
+        stringBuilder.append(StructLoggerConfig.getLogEntriesSeparator()).append(" ").append(key).append("=");
         String value = String.valueOf(val);
         value = value.replace("\"", "\\\"");
         if (!value.contains(" ")) {

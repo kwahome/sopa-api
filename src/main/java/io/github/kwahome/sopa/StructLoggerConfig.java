@@ -24,44 +24,49 @@
 
 package io.github.kwahome.sopa;
 
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
 import io.github.kwahome.sopa.interfaces.LogRenderer;
 import io.github.kwahome.sopa.interfaces.LoggableObject;
 import io.github.kwahome.sopa.renderers.KeyValueRenderer;
+import io.github.kwahome.sopa.utils.Helpers;
+import lombok.NonNull;
+import lombok.experimental.UtilityClass;
 
 /**
  * sopa configuration class.
  *
  * This class exposes statics that can be accessed without need of an instance.
  *
- * @author kelvin.wahome
+ * @author Kelvin Wahome
  */
+@UtilityClass
 public class StructLoggerConfig {
-    private static final String STRUCTLOG4J_TAG = "[sopa logger] :";
+    private static final String SOPA_LOGGER_TAG = "[sopa logger] :";
 
     private static LogRenderer logRenderer = KeyValueRenderer.getInstance();
 
     private static Optional<LoggableObject> contextSupplier = Optional.empty();
 
-    // default formatter returns a toString(), regardless of object type unless null
+    // default value formatter returns a toString(), regardless of object type unless null
     private static Function<Object, String> valueRenderer = (value) -> value == null ? "null" : value.toString();
 
     // default char string to appear between log params
     private static String logEntriesSeparator = ",";
 
-    public static String getStructLog4jTag() {
-        return STRUCTLOG4J_TAG;
+    public static String getSopaLoggerTag() {
+        return SOPA_LOGGER_TAG;
     }
 
     /**
-     * logRenderer setter method.
+     * {@link LogRenderer} logRenderer setter method.
      *
      * Allows override to the default logRenderer. Should be only done once during application
      * startup from the main thread to avoid any concurrency issues
      *
-     * @param logRenderer "Custom logRenderer implementing the LogRenderer interface"
+     * @param logRenderer "Custom logRenderer implementing the {@link LogRenderer} interface"
      */
     public static void setLogRenderer(LogRenderer logRenderer) {
         StructLoggerConfig.logRenderer = logRenderer;
@@ -75,9 +80,9 @@ public class StructLoggerConfig {
     }
 
     /**
-     * contextSupplier setter method.
+     * {@link Optional} contextSupplier setter method.
      *
-     * Allows setting a LoggableObject POJO or lambda that will be invoked on every log entry
+     * Allows setting a {@link LoggableObject} POJO or lambda that will be invoked on every log entry
      * to add additional mandatory key-value pairs for shared variables e.g:
      *
      *      environment
@@ -88,12 +93,30 @@ public class StructLoggerConfig {
      *
      * @param contextObject "Lambda that will executed on every log entry."
      */
-    public static void setContextSupplier(LoggableObject contextObject) {
+    public static void setContextSupplier(@NonNull LoggableObject contextObject) {
         StructLoggerConfig.contextSupplier = Optional.of(contextObject);
     }
 
     /**
-     * contextSupplier getter method.
+     * {@link #setContextSupplier(LoggableObject)} overload allowing use of an array of objects
+     *
+     * @param params {@link Object[]}
+     */
+    public static void setContextSupplier(@NonNull Object...params) {
+        setContextSupplier(new GenericLoggableObject(params));
+    }
+
+    /**
+     * {@link #setContextSupplier(LoggableObject)} overload allowing use of a map's key, value entrySet
+     *
+     * @param map {@link Map <String, Object>}
+     */
+    public static void setContextSupplier(@NonNull Map<String, Object> map) {
+        setContextSupplier(new GenericLoggableObject(Helpers.mapToObjectArray(map)));
+    }
+
+    /**
+     * {@link Optional} contextSupplier getter method.
      */
     public static Optional<LoggableObject> getContextSupplier() {
         return contextSupplier;
@@ -107,40 +130,38 @@ public class StructLoggerConfig {
     }
 
     /**
-     * valueRenderer setter method.
+     * {@link Function <Object, String>} valueRenderer setter method.
      *
      * Allows setting a function that accepts one argument & produces a result e.g.
      * a lambda function, that can perform custom log rendering of any object that
      * is passed in as a value to any key-value entry
      *
-     * @param customValueRenderer value renderer lambda
+     * @param customValueRenderer {@link Function <Object, String>} value renderer lambda
      */
-    public static void setValueRenderer(Function<Object, String> customValueRenderer) {
-        if (customValueRenderer != null) {
-            valueRenderer = customValueRenderer;
-        } else {
-            throw new RuntimeException("Value renderer cannot be null");
-        }
+    public static void setValueRenderer(@NonNull Function<Object, String> customValueRenderer) {
+        valueRenderer = customValueRenderer;
     }
 
     /**
-     * valueRenderer getter method.
+     * {@link Function <Object, String>} valueRenderer getter method.
+     *
+     * @return {@link Function <Object, String>}
      */
     public static Function<Object, String> getValueRenderer() {
         return valueRenderer;
     }
 
     /**
-     * logEntriesSeparator setter method.
+     * {@link String} logEntriesSeparator setter method.
      *
-     * @param logEntriesSeparator "String appearing between key=value pairs"
+     * @param logEntriesSeparator "{@link String} appearing between key=value pairs"
      */
-    public static void setLogEntriesSeparator(String logEntriesSeparator) {
+    public static void setLogEntriesSeparator(@NonNull String logEntriesSeparator) {
         StructLoggerConfig.logEntriesSeparator = logEntriesSeparator;
     }
 
     /**
-     * logEntriesSeparator getter method.
+     * {@link String} logEntriesSeparator getter method.
      */
     public static String getLogEntriesSeparator() {
         return logEntriesSeparator;

@@ -28,12 +28,12 @@ package io.github.kwahome.sopa.interfaces;
  * {@link FunctionalInterface} that can be added to any POJO to enable structured
  * logging whenever it is passed to the logger.
  *
- * @author kelvin.wahome
+ * @author Kelvin Wahome
  */
 @FunctionalInterface
 public interface LoggableObject {
     /**
-     * Return an array of key-value pairs with values for logging. e.g:
+     * Return an {@link Object[]} of key-value pairs with values for logging. e.g:
      *
      *      ["key1", "value1", "key2", "value2"]
      *
@@ -41,7 +41,7 @@ public interface LoggableObject {
      *
      *      return {@link Object}[]{"key1", this.getProperty1(), "key2", this.getProperty2()"};
      *
-     * @return Array of key-value pairs to log
+     * @return {@link Object[]} of key-value pairs to log
      */
     Object[] loggableObject();
 }

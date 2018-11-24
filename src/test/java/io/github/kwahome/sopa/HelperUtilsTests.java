@@ -27,18 +27,18 @@ package io.github.kwahome.sopa;
 import java.util.HashMap;
 import java.util.Map;
 
-import io.github.kwahome.sopa.utils.Helpers;
-
+import static org.hamcrest.CoreMatchers.is;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import static org.hamcrest.CoreMatchers.is;
+
+import io.github.kwahome.sopa.utils.Helpers;
 
 /**
  * Testing helper utilities
  *
- * @author kelvin.wahome
+ * @author Kelvin Wahome
  */
 public class HelperUtilsTests {
     private Object[] objectArray;
@@ -54,7 +54,9 @@ public class HelperUtilsTests {
     }
 
     @After
-    public void tearDown(){}
+    public void tearDown() {
+        objectArray = new Object[]{};
+    }
 
     @Test
     public void mapToObjectArrayTest() {
