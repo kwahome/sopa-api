@@ -19,7 +19,7 @@ checkstyleTest {
 }
 
 group 'io.github.kwahome.sopa'
-version '0.4.0-SNAPSHOT'
+version '0.5.0-SNAPSHOT'
 archivesBaseName = "sopa-api"
 description = """Configurable and extensible structured logging on top of `slf4j` API to generate easily parsable log messages in desired formats."""
 sourceCompatibility = 1.8
