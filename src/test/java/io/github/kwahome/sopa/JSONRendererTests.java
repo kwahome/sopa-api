@@ -28,7 +28,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;

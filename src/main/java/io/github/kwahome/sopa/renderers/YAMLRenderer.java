@@ -82,7 +82,7 @@ public class YAMLRenderer implements LogRenderer<Map<String, String>> {
     @Override
     public final LogRenderer<Map<String, String>> addKeyValue(
             Logger logger, Map<String, String> builderObject, String key, Object value) {
-        if (key.equals("message")) {
+        if ("message".equals(key)) {
             key = "message1";
             logger.warn(String.format("%s key `message` renamed to `%s` to avoid overriding default log message field.",
                     StructLoggerConfig.getSopaLoggerTag(), key));

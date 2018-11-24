@@ -62,15 +62,15 @@ public class JSONRenderer implements LogRenderer<JsonObjectBuilder> {
 
     @Override
     public final LogRenderer<JsonObjectBuilder> addMessage(
-            org.slf4j.Logger logger, JsonObjectBuilder jsonObjectBuilder, String message) {
+            Logger logger, JsonObjectBuilder jsonObjectBuilder, String message) {
         jsonObjectBuilder.add("message", message);
         return this;
     }
 
     @Override
     public final LogRenderer<JsonObjectBuilder> addKeyValue(
-            org.slf4j.Logger logger, JsonObjectBuilder jsonObjectBuilder, String key, Object value) {
-        if (key.equals("message")) {
+            Logger logger, JsonObjectBuilder jsonObjectBuilder, String key, Object value) {
+        if ("message".equals(key)) {
             key = "message1";
             logger.warn(String.format("%s key `message` renamed to `%s` to avoid overriding default log message field.",
                     StructLoggerConfig.getSopaLoggerTag(), key));
@@ -94,7 +94,7 @@ public class JSONRenderer implements LogRenderer<JsonObjectBuilder> {
     }
 
     @Override
-    public final String end(org.slf4j.Logger logger, JsonObjectBuilder jsonObjectBuilder) {
+    public final String end(Logger logger, JsonObjectBuilder jsonObjectBuilder) {
         StringWriter stringWriter = new StringWriter();
         try (JsonWriter jsonWriter = Json.createWriter(stringWriter)) {
             jsonWriter.writeObject(jsonObjectBuilder.build());

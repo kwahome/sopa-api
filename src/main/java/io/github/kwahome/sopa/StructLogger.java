@@ -26,6 +26,7 @@ package io.github.kwahome.sopa;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 
 import org.slf4j.LoggerFactory;
 import org.slf4j.event.Level;
@@ -346,7 +347,8 @@ public class StructLogger implements Logger {
         boolean valid = validateKey(keyObject, loggableSourceObject, true);
         if (valid) {
             String key = (String) keyObject;
-            logRenderer.addKeyValue(slf4jLogger, builderObject, key, value);
+            Function<Object, String> valueRenderer = StructLoggerConfig.getValueRenderer();
+            logRenderer.addKeyValue(slf4jLogger, builderObject, key, valueRenderer.apply(value));
         }
         return valid;
     }

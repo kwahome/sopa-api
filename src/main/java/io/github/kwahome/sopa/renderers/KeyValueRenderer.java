@@ -26,6 +26,7 @@ package io.github.kwahome.sopa.renderers;
 
 import org.slf4j.Logger;
 
+import io.github.kwahome.sopa.StructLoggerConfig;
 import io.github.kwahome.sopa.interfaces.LogRenderer;
 
 /**
@@ -79,7 +80,7 @@ public class KeyValueRenderer implements LogRenderer<StringBuilder> {
 
     @Override
     public LogRenderer<StringBuilder> addKeyValue(Logger logger, StringBuilder stringBuilder, String key, Object val) {
-        stringBuilder.append(",").append(" ").append(key).append("=");
+        stringBuilder.append(StructLoggerConfig.getLogEntriesSeparator()).append(" ").append(key).append("=");
         String value = String.valueOf(val);
         value = value.replace("\"", "\\\"");
         if (!value.contains(" ")) {
