@@ -2,6 +2,7 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/21b905dc40e542bfbd8477dcc9b0a7ca)](https://app.codacy.com/app/kwahome/sopa-api?utm_source=github.com&utm_medium=referral&utm_content=kwahome/sopa-api&utm_campaign=Badge_Grade_Dashboard)
 [![Build Status](https://travis-ci.com/kwahome/sopa-api.svg?branch=master)](https://travis-ci.com/kwahome/sopa-api)
 [![codecov](https://codecov.io/gh/kwahome/sopa-api/branch/master/graph/badge.svg)](https://codecov.io/gh/kwahome/sopa-api)
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.kwahome.sopa/sopa-api.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22io.github.kwahome.sopa%22%20AND%20a:%22sopa-api%22)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 > `Sopa` is hello in Maasai to which you reply `Sopa Oleng` 😀
@@ -606,7 +607,7 @@ which would result in log messages:
 
 ### Helper Utils
 `sopa` has a static class `Helpers` in the utils with methods useful in converting a `Map<String, Object>` into an `Object[]` and the converse.
-They are used internally in converting passed in objects back and forth into which is the clever trick behind supporting logging params alternatives.
+They are used internally in converting passed in objects back and forth which is the clever trick behind supporting logging params alternatives.
 
 They can be helpful to you as well especially while implementing the `LoggableObject` in your class. e.g:
 
