@@ -163,7 +163,9 @@ model {
 }
 
 signing {
-    sign configurations.archives
+    if (!project.hasProperty("TRAVIS_CI")) {
+        sign configurations.archives
+    }
 }
 
 javadoc {
