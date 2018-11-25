@@ -163,7 +163,7 @@ model {
 }
 
 signing {
-    if (!project.hasProperty("TRAVIS_CI")) {
+    if (System.getProperty("travis") == "false") {
         sign configurations.archives
     }
 }

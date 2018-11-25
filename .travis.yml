@@ -6,6 +6,6 @@ jdk:
 before_script:
 - chmod +x gradlew
 script:
-- ./gradle check -P TRAVIS_CI
+- ./gradle check -D travis=true
 after_success:
 - bash <(curl -s https://codecov.io/bash)
