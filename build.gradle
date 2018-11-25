@@ -155,17 +155,17 @@ publishing{
             }
         }
     }
-//    repositories {
-//        maven {
-//            def releasesRepoUrl = "https://oss.sonatype.org/content/repositories/releases"
-//            def snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots"
-//            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
-//            credentials {
-//                username = sonatypeUsername
-//                password = sonatypePassword
-//            }
-//        }
-//    }
+    repositories {
+        maven {
+            def releasesRepoUrl = "https://oss.sonatype.org/content/repositories/releases"
+            def snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots"
+            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+            credentials {
+                username = sonatypeUsername
+                password = sonatypePassword
+            }
+        }
+    }
 }
 
 model {
@@ -174,9 +174,9 @@ model {
     }
 }
 
-//signing {
-//    sign configurations.archives
-//}
+signing {
+    sign configurations.archives
+}
 
 javadoc {
     if(JavaVersion.current().isJava9Compatible()) {

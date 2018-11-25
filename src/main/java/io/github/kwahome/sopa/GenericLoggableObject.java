@@ -38,18 +38,38 @@ public class GenericLoggableObject implements LoggableObject {
 
     GenericLoggableObject(){}
 
+    /**
+     * Constructor
+     *
+     * @param loggableObjectArray {@link Object[]}
+     */
     public GenericLoggableObject(Object[] loggableObjectArray) {
         this.loggableObjectArray = loggableObjectArray;
     }
 
+    /**
+     * Getter
+     *
+     * @return {@link Object[]}
+     */
     public Object[] getLoggableObjectArray() {
         return loggableObjectArray;
     }
 
+    /**
+     * Setter
+     *
+     * @param loggableObjectArray {@link Object[]}
+     */
     public void setLoggableObjectArray(Object[] loggableObjectArray) {
         this.loggableObjectArray = loggableObjectArray;
     }
 
+    /**
+     * {@link LoggableObject} loggableObject method implementation.
+     *
+     * @return {@link Object[]}
+     */
     @Override
     public Object[] loggableObject() {
         return getLoggableObjectArray();

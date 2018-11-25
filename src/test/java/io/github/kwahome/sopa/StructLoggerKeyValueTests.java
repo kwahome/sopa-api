@@ -36,6 +36,7 @@ import org.junit.Test;
 import io.github.kwahome.sopa.interfaces.LoggableObject;
 import io.github.kwahome.sopa.renderers.KeyValueRenderer;
 import io.github.kwahome.sopa.utils.Helpers;
+import uk.org.lidalia.slf4jext.Level;
 import uk.org.lidalia.slf4jtest.LoggingEvent;
 import uk.org.lidalia.slf4jtest.TestLogger;
 
@@ -60,6 +61,27 @@ public class StructLoggerKeyValueTests {
     @After
     public void tearDown() {
         slf4jLogger.clear();
+        // reset all levels to enabled
+        slf4jLogger.setEnabledLevels(
+                Level.ERROR, Level.WARN, Level.INFO, Level.DEBUG, Level.TRACE);
+    }
+
+    @Test
+    public void levelsEnabledTest() {
+        Assert.assertTrue(logger.isErrorEnabled());
+        Assert.assertTrue(logger.isWarnEnabled());
+        Assert.assertTrue(logger.isInfoEnabled());
+        Assert.assertTrue(logger.isDebugEnabled());
+        Assert.assertTrue(logger.isTraceEnabled());
+
+        // disable them & assert correct results returned
+        slf4jLogger.setEnabledLevels();
+
+        Assert.assertFalse(logger.isErrorEnabled());
+        Assert.assertFalse(logger.isWarnEnabled());
+        Assert.assertFalse(logger.isInfoEnabled());
+        Assert.assertFalse(logger.isDebugEnabled());
+        Assert.assertFalse(logger.isTraceEnabled());
     }
 
     @Test

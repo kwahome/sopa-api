@@ -58,6 +58,12 @@ public class StructLogger implements Logger {
         slf4jLogger = LoggerFactory.getLogger(source);
     }
 
+    /**
+     * {@link Logger} error method implementation.
+     *
+     * @param message {@link String} message
+     * @param params {@link Object []} params
+     */
     @Override
     public void error(String message, Object... params) {
         if (slf4jLogger.isErrorEnabled()) {
@@ -65,6 +71,12 @@ public class StructLogger implements Logger {
         }
     }
 
+    /**
+     * {@link Logger} warn method implementation.
+     *
+     * @param message {@link String} message
+     * @param params {@link Object []} params
+     */
     @Override
     public void warn(String message, Object... params) {
         if (slf4jLogger.isWarnEnabled()) {
@@ -72,6 +84,12 @@ public class StructLogger implements Logger {
         }
     }
 
+    /**
+     * {@link Logger} info method implementation.
+     *
+     * @param message {@link String} message
+     * @param params {@link Object []} params
+     */
     @Override
     public void info(String message, Object... params) {
         if (slf4jLogger.isInfoEnabled()) {
@@ -79,6 +97,12 @@ public class StructLogger implements Logger {
         }
     }
 
+    /**
+     * {@link Logger} debug method implementation.
+     *
+     * @param message {@link String} message
+     * @param params {@link Object []} params
+     */
     @Override
     public void debug(String message, Object... params) {
         if (slf4jLogger.isDebugEnabled()) {
@@ -86,6 +110,12 @@ public class StructLogger implements Logger {
         }
     }
 
+    /**
+     * {@link Logger} trace method implementation.
+     *
+     * @param message {@link String} message
+     * @param params {@link Object []} params
+     */
     @Override
     public void trace(String message, Object... params) {
         if (slf4jLogger.isTraceEnabled()) {
@@ -93,31 +123,61 @@ public class StructLogger implements Logger {
         }
     }
 
+    /**
+     * {@link Logger} isErrorEnabled method implementation.
+     *
+     * @return boolean
+     */
     @Override
     public boolean isErrorEnabled() {
         return slf4jLogger.isErrorEnabled();
     }
 
+    /**
+     * {@link Logger} isWarnEnabled method implementation.
+     *
+     * @return boolean
+     */
     @Override
     public boolean isWarnEnabled() {
         return slf4jLogger.isWarnEnabled();
     }
 
+    /**
+     * {@link Logger} isInfoEnabled method implementation.
+     *
+     * @return boolean
+     */
     @Override
     public boolean isInfoEnabled() {
         return slf4jLogger.isInfoEnabled();
     }
 
+    /**
+     * {@link Logger} isDebugEnabled method implementation.
+     *
+     * @return boolean
+     */
     @Override
     public boolean isDebugEnabled() {
         return slf4jLogger.isDebugEnabled();
     }
 
+    /**
+     * {@link Logger} isTraceEnabled method implementation.
+     *
+     * @return boolean
+     */
     @Override
     public boolean isTraceEnabled() {
         return slf4jLogger.isTraceEnabled();
     }
 
+    /**
+     * {@link org.slf4j.Logger} getter.
+     *
+     * @return {@link org.slf4j.Logger}
+     */
     public org.slf4j.Logger getSlf4jLogger() {
         return slf4jLogger;
     }
@@ -126,7 +186,7 @@ public class StructLogger implements Logger {
      * Returns a {@link LoggableObject} from the optional {@link #instanceBoundContext}.
      * If the {@link Optional} is empty, an empty {@link GenericLoggableObject} is returned.
      *
-     * @return {@link Optional}
+     * @return {@link LoggableObject}
      */
     private LoggableObject getLoggableInstanceBoundContext() {
         LoggableObject loggableObject = new GenericLoggableObject();
@@ -150,7 +210,7 @@ public class StructLogger implements Logger {
      *
      * If the optional is empty, an empty {@link GenericLoggableObject} is returned.
      *
-     * @return Optional
+     * @return {@link LoggableObject}
      */
     private LoggableObject getLoggableGlobalContextSupplier() {
         LoggableObject loggableObject = new GenericLoggableObject();
@@ -167,7 +227,7 @@ public class StructLogger implements Logger {
      *
      *      [key1, value1, key2, value2]
      *
-     * @param params "list of key-value pairs"
+     * @param params {@link Object[]} of key-value pairs
      */
     @Override
     public void newBind(Object...params) {
@@ -183,7 +243,7 @@ public class StructLogger implements Logger {
      *
      *      [key1, value1, key2, value2]
      *
-     * @param params "list of key-value pairs"
+     * @param params {@link Object[]} of key-value pairs
      */
     @Override
     public void bind(Object...params) {
@@ -201,7 +261,7 @@ public class StructLogger implements Logger {
      *
      *      [key1, value1, key2, value2]
      *
-     * @param params "list of key-value pairs"
+     * @param params {@link Object[]} of key-value pairs
      */
     @Override
     public void unbind(Object...params) {
@@ -214,7 +274,7 @@ public class StructLogger implements Logger {
      * The {@link Object}[] instanceBoundContext and the array of params are converted into a
      * {@link Map}<{@link String}, {@link Object}> to guarantee that keys are not duplicated.
      *
-     * @param params "array of objects"
+     * @param params {@link Object[]}
      * @return {@link Object}[]
      */
     private Object[] addParamsToBoundContext(Object...params) {
@@ -263,8 +323,8 @@ public class StructLogger implements Logger {
     /**
      * Removes passed log context params to context bound to the logger instance
      *
-     * @param params "array of objects"
-     * @return Object[]
+     * @param params {@link Object[]}
+     * @return {@link Object[]}
      */
     private Object[] removeItemFromBoundContext(Object...params) {
         Map<String, Object> stringObjectMap = Helpers.objectArrayToMap(
@@ -501,6 +561,12 @@ public class StructLogger implements Logger {
         }
     }
 
+    /**
+     * Handles actual logging of ERROR {@link Level}.
+     *
+     * @param structuredMessage {@link String}
+     * @param err {@link Throwable}
+     */
     private void logAtError(String structuredMessage, Throwable err) {
         if (err == null) {
             slf4jLogger.error(structuredMessage);
@@ -509,6 +575,12 @@ public class StructLogger implements Logger {
         }
     }
 
+    /**
+     * Handles actual logging of WARN {@link Level}.
+     *
+     * @param structuredMessage {@link String}
+     * @param err {@link Throwable}
+     */
     private void logAtWarn(String structuredMessage, Throwable err) {
         if (err == null) {
             slf4jLogger.warn(structuredMessage);
@@ -517,6 +589,12 @@ public class StructLogger implements Logger {
         }
     }
 
+    /**
+     * Handles actual logging of INFO {@link Level}.
+     *
+     * @param structuredMessage {@link String}
+     * @param err {@link Throwable}
+     */
     private void logAtInfo(String structuredMessage, Throwable err) {
         if (err == null) {
             slf4jLogger.info(structuredMessage);
@@ -525,6 +603,12 @@ public class StructLogger implements Logger {
         }
     }
 
+    /**
+     * Handles actual logging of DEBUG {@link Level}.
+     *
+     * @param structuredMessage {@link String}
+     * @param err {@link Throwable}
+     */
     private void logAtDebug(String structuredMessage, Throwable err) {
         if (err == null) {
             slf4jLogger.debug(structuredMessage);
@@ -533,6 +617,12 @@ public class StructLogger implements Logger {
         }
     }
 
+    /**
+     * Handles actual logging of TRACE {@link Level}.
+     *
+     * @param structuredMessage {@link String}
+     * @param err {@link Throwable}
+     */
     private void logAtTrace(String structuredMessage, Throwable err) {
         if (err == null) {
             slf4jLogger.trace(structuredMessage);
